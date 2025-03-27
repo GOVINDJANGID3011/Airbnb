@@ -1,0 +1,113 @@
+body{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.container{
+    flex:1;
+}
+
+/* navabar styling */
+    .navbar-brand{
+        font-size: 2rem;
+        color: #fe424d;
+    }
+
+    .navbar{
+        height: 4.5rem;
+    }
+
+    .nav-link{
+        color: #222222 ;
+    }
+/* footer styling */
+    .footer{
+        text-align: center;
+        background-color: #a39d9d;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        /* position: ; */
+    }
+
+    .f-links a{
+        text-decoration: none ;
+        color: black;
+        font-weight: 600;
+    } 
+
+    .f-links{
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .f-socials{
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+        cursor: pointer ;
+    }
+
+    .f-socials a{
+        color: black;
+    }
+
+
+/* all_listing_in_card_ford */
+    .all_cards{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        justify-content: center;
+    }
+
+    .card-link{
+        text-decoration: none !important;
+    }
+
+    .card-body{
+        padding: .4rem;
+        margin-bottom: 3rem;
+    }
+    .card-img-top{
+        height: 18rem;
+        width: 100%;
+        border-radius: 2rem;
+    }
+
+    .card-img-overlay{
+        border-radius: 1rem;
+    }
+    .card-img-overlay:hover{
+        background-color: rgb(176, 165, 165);
+        opacity: 0.1;
+    }
+    
+    .card{
+        border: none;
+        border-radius: 2remc;
+    }
+
+
+/* new listing style */
+    .btn{
+        margin-top: .6rem;
+    }
+
+
+/* Review styling */
+
+.review-card{
+    border: .05rem solid rgb(149, 44, 15);
+    /* margin: 0rem; */
+}
+
+
+/* map styling */
+#map {
+    height: 20rem;
+    width: 110vh;
+}

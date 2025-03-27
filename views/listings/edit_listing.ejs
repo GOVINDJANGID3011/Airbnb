@@ -1,0 +1,51 @@
+<%- layout('./layouts/boilerplate.ejs') %>
+
+<body>
+    <div class="row"></div>
+            <div class="col-8 offset-2">
+                <br>
+                <h1>Editing</h1>
+                <form method="post" action="/listings/edit/<%=list._id%>?_method=put" novalidate class="needs-validation" enctype="multipart/form-data">
+                    <div>
+                        <label for="title" class="form-label">Title</label>
+                        <input class="form-control" name=list[title] placeholder='write title' value="<%=list.title%>" type="text"  required>
+                        <div class="invalid-feedback">Enter valid title</div>
+                    </div>
+                    <div>
+                        <label for="title" class="form-label">Description</label>
+                        <textarea class="form-control"  name=list[description] placeholder="write description"  required><%=list.description%></textarea>
+                        <div class="invalid-feedback">Enter valid description</div>
+                    </div>
+                    <div>
+                        <label for="">Original Image</label><br>
+                        <img style="height: 10rem;width: 13rem;" src="<%=preview_url%>" alt="Original Image">
+                    </div>
+                    <div>
+                       
+                        <label for="title" class="form-label">Update Image</label>
+                        <input class="form-control" name=list[image][url] placeholder="write image url" type="file">
+                    </div>
+        
+                    <div class="row">
+                        <div class="col-md-4" >
+                            <label for="title" class="form-label">Price</label>
+                            <input class="form-control" name=list[price] placeholder='write price' value="<%=list.price%>" type="text" required>
+                            <div class="invalid-feedback">Enter valid price</div>
+                        </div>
+                        <div class="col-md-8">
+                            <label for="title" class="form-label">Location</label>
+                            <input class="form-control" name=list[location] placeholder="write Location" value="<%=list.location%>" type="text"  required>
+                            <div class="invalid-feedback">Enter valid location</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="title" class="form-label">Country</label>
+                        <input class="form-control" name=list[country] placeholder="write Country" value="<%=list.country%>" type="text"  required>
+                        <div class="invalid-feedback">Enter valid country</div>
+                    </div>
+                    <button class="btn-dark btn" >Add changes</button>
+                </form>
+            </div>
+    </div>
+</body>
