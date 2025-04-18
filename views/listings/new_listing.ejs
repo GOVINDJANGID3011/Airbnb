@@ -18,7 +18,7 @@
                 <div class="invalid-feedback">Description is required</div>
 
                 <label for="title" class="form-label">Image URL</label>
-                <input name=list[image][url] placeholder="write image url" type="file" class="form-control">
+                <input name=images[] placeholder="write image url" type="file" class="form-control" accept="image/*" multiple>
                 
                 <div class="row">
                     <div class="col-md-4" >
@@ -26,10 +26,43 @@
                         <input name=list[price] placeholder='write price' type="text" class="form-control" required>
                         <div class="invalid-feedback">Enter valid price</div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-4">
                         <label for="title" class="form-label">Location</label>
                         <input name=list[location] placeholder="write Location " type="text" class="form-control" required>
                         <div class="invalid-feedback">Enter valid location</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="categorySelect" class="form-label">Select Category</label>
+                        <select class="form-select" name="list[category_type]" id="categorySelect">
+                          <option selected value="rooms">rooms</option>
+                          <option value="airports">Airports</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="apartments">Apartments</option>
+                            <option value="beach">Beach</option>
+                            <option value="boutique">Boutique</option>
+                            <option value="bungalow">Bungalow</option>
+                            <option value="budget">Budget</option>
+                            <option value="camping">Camping</option>
+                            <option value="castles">Castles</option>
+                            <option value="cottage">Cottage</option>
+                            <option value="desert">Desert</option>
+                            <option value="farm">Farm</option>
+                            <option value="ferry">Ferry</option>
+                            <option value="forest">Forest</option>
+                            <option value="hostel">Hostel</option>
+                            <option value="hotel">Hotel</option>
+                            <option value="house">House</option>
+                            <option value="iconic_cities">Iconic Cities</option>
+                            <option value="luxury">Luxury</option>
+                            <option value="motel">Motel</option>
+                            <option value="mountain">Mountain</option>
+                            <option value="pools">Pools</option>
+                            <option value="resort">Resort</option>
+                            <option value="rooms">Rooms</option>
+                            <option value="ship">Ship</option>
+                            <option value="trending">Trending</option>
+                            <option value="villa">Villa</option>
+                        </select>
                     </div>
                 </div>
 
@@ -46,3 +79,6 @@
         
     </form>
 </body>
+
+
+

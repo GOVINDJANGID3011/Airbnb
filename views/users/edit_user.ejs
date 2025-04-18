@@ -1,0 +1,129 @@
+<%- layout('./layouts/boilerplate.ejs') %>
+
+<style>
+    /* body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    } */
+
+    .profile-container {
+        background-color: white;
+        padding: 20px;
+        margin-top: 3rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .profile-container img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 15px;
+    }
+
+    .profile-container h2 {
+        font-size: 1rem;
+        margin: 10px 0;
+        color: #333;
+    }
+
+    .profile-container p {
+        font-size: 1rem;
+        color: #777;
+        margin: 5px 0;
+    }
+
+    .change-picture-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+    }
+
+    .change-picture-btn:hover {
+        background-color: #0056b3;
+    }
+
+    @media screen and (max-width: 768px) {
+        .profile-container {
+            width: 80%;
+        }
+
+        .profile-container h2 {
+            font-size: 1.4rem;
+        }
+
+        .profile-container p {
+            font-size: 0.9rem;
+        }
+
+        .change-picture-btn {
+            font-size: 0.9rem;
+        }
+    }
+
+    .upload-button {
+          display: inline-block;
+          padding: 10px 20px;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 10px;
+          transition: background-color 0.3s ease;
+        }
+        .upload-btns{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: auto 0rem;
+        }
+</style>
+</head>
+<body>
+    <div class="row">
+        <div class="col-8 offset-4">
+            <div class="profile-container">
+                <!-- Profile Picture -->
+                <img class="profile_Image" src="<%= currUser.profile_pic %>" alt="Profile Picture">
+                <form action=""></form>
+                <form action="/edit" method="post" enctype="multipart/form-data">
+                    <input type="file" id="profilePic" name="profilePic" accept="image/*" style="display: none;" />
+                    <div class="upload-btns">
+                        <label for="profilePic" class="upload-button">Upload new picture</label>
+                        <button class="upload-button">Save changes</button>
+                    </div>
+                </form>
+            
+                <!-- Username and Email -->
+                <h2>@<%= currUser.username %></h2>
+                <h2>Email :<%= currUser.email %></h2>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    let profilepic=document.querySelector(".profile_Image");
+    let inputfile=document.querySelector("#profilePic");
+
+    inputfile.addEventListener('change',()=>{
+        profilepic.src=URL.createObjectURL(inputfile.files[0]);
+    })
+</script>

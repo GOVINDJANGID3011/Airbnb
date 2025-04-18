@@ -1,17 +1,17 @@
 const express=require('express');
 const router=express.Router({mergeParams:true});
 const wrapAsync=require('../utils/wrapAsync.js');
-const expressError=require('../utils/expressError.js');
-const listing=require('../models/schema.js');
-const review=require('../models/review_schema.js');
-const { isLogged,validationListing, isOwner } = require('../middleware.js');
-const User=require('../models/user_schema.js');
+// const expressError=require('../utils/expressError.js');
+// const listing=require('../models/schema.js');
+// const review=require('../models/review_schema.js');
+const { isLogged,listingvalidation, isOwner } = require('../middleware.js');
+// const User=require('../models/user_schema.js');
 
 const listingcontroller = require('../controller/listingcontroller.js');
 
 const {storage}=require('../cloudconfig.js');
 const multer=require('multer');
-const upload=multer({storage});
+const upload=multer({storage:storage,limits: { files: 10 }});
 
 // listing routes
 
@@ -26,17 +26,17 @@ router.route('/view/:id')
 router.route('/new_listing')
         .get(isLogged,wrapAsync(listingcontroller.new_lisitng_form));       // Add listing route
 
-router.route('/add')
-        .post(upload.single('list[image][url]'),
-        validationListing,
+router.route('/add')   
+        .post(upload.array('images[]',10),
+        listingvalidation,
         wrapAsync(listingcontroller.add_new_listing)
 );
 
 
 router.route('/edit/:id')
         .get(isLogged,isOwner,wrapAsync(listingcontroller.edit_listing_form))       // Edit route
-        .put(upload.single('list[image][url]'),
-        validationListing,isOwner,
+        .put(upload.array('images[]',10),
+        listingvalidation,isOwner,
         wrapAsync(listingcontroller.update_listing));      //update route
 
 

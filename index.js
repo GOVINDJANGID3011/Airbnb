@@ -11,6 +11,7 @@ const expressError=require('./utils/expressError.js');
 const listingRouter=require('./routes/listings.js')
 const reviewRouter=require('./routes/reviews.js');
 const userRouter=require('./routes/user.js');
+const bookingRouter=require('./routes/booking.js')
 const session=require('express-session');
 const MongoStore=require('connect-mongo');
 const flash=require('connect-flash');
@@ -23,7 +24,7 @@ let mongo_url=process.env.mongo_atlas_url;
 
 const port=3000;
 connection();
-//all use method are written here
+//all used method are written here
 app.use(express.static('public'));
 app.engine('ejs',ejsmate);
 app.set('view engine','ejs');
@@ -42,6 +43,7 @@ const store=MongoStore.create({
 store.on("error",()=>{
     console.log("Error in mongo session store ",err);
 })
+
 const sessionOptions={
     store:store,
     secret:process.env.MYSECRET,
@@ -76,7 +78,12 @@ app.use((req,res,next)=>{
 app.use('/listings',listingRouter);
 app.use('/listings/:id/review',reviewRouter);
 app.use('/',userRouter);
+app.use('/booking',bookingRouter);
 
+//root route
+app.use('/',(req,res)=>{
+    res.redirect('./listings');
+})
 // checking port
 app.listen(port,()=>{
     console.log("app is listening");
@@ -91,6 +98,4 @@ app.all('*',(req,res,next)=>{
 app.use((err,req,res,next)=>{
    let {statusCode=500,message='Something went wrong'}=err;
    res.render('listings/error.ejs',{message});
-   // res.status(statusCode).send(message);
-   // res.send("Something went wrong");
 })

@@ -1,0 +1,39 @@
+<%- layout('./layouts/boilerplate.ejs') %>
+
+
+<body>
+        <div class="row"></div>
+            <div class="col-8 offset-2">
+                <br>
+                <h1>Create a new Booking</h1>
+                <form method="post" action="/booking/<%= newlisting._id %>" novalidate class="needs-validation" >
+
+                <label for="listing" class="form-label">listing</label>
+                <input placeholder="<%= newlisting.title %>" type="text" class="form-control" required disabled >
+
+                <label for="" class="form-label">Full Name</label>
+                <input name='fullname' placeholder="write fullname" type="text" class="form-control" required>
+                <div class="invalid-feedback">Name is required</div>
+
+                <label for="" class="form-label">Phone Number</label>
+                <input name='phone_no' placeholder="write number" type="number" class="form-control" required>
+                <div class="invalid-feedback">Number is required</div>
+
+                <label for="" class="form-label">Check_in</label>
+                <input name=checkin placeholder="write checkin" type="date" class="form-control" required>
+                <div class="invalid-feedback">checkin date is required</div>
+                
+                <label for="" class="form-label">Check_out</label>
+                <input name='checkout' placeholder="write checkout" type="date" class="form-control" required>
+                <div class="invalid-feedback">checkout is required</div>
+                <br>
+                <button class="btn-dark btn" >book</button>
+            </div>
+            
+        </div>
+        
+    </form>
+</body>
+
+
+

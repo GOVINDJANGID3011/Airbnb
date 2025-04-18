@@ -1,11 +1,11 @@
 const listing=require('./models/schema');
 const review=require('./models/review_schema');
-const {listingSchema,reviewschema}=require('./schema.js');
+const {listingValidationSchema,reviewValidationSchema,bookingValidationSchema}=require('./schema.js');
 const expressError=require('./utils/expressError.js');
 
 
-module.exports.validationListing = (req,res,next)=>{
-    const result=listingSchema.validate(req.body);
+module.exports.listingvalidation = (req,res,next)=>{
+    const result=listingValidationSchema.validate(req.body);
     if(result.error){
         let errmsg=result.error.details.map((el)=>el.message).join(",");
         throw new expressError(400,result.error.message);
@@ -16,7 +16,17 @@ module.exports.validationListing = (req,res,next)=>{
 
 module.exports.reviewvalidation = (req,res,next)=>{
     console.log(req.body);
-    const result=reviewschema.validate(req.body);
+    const result=reviewValidationSchema.validate(req.body);
+    if(result.error){
+        let errmsg=result.error.details.map((el)=>el.message).join(",");
+        throw new expressError(400,result.error.message);
+    }
+    else next();
+}
+
+module.exports.bookingvalidation = (req,res,next)=>{
+    console.log(req.body);
+    const result=bookingValidationSchema.validate(req.body);
     if(result.error){
         let errmsg=result.error.details.map((el)=>el.message).join(",");
         throw new expressError(400,result.error.message);

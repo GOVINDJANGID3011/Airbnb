@@ -1,27 +1,72 @@
 <%- layout('./layouts/boilerplate.ejs') %>
 
+<style>
+    
+    .password {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        position: relative;
+    }
+    .password i {
+        cursor: pointer;
+        position: absolute;
+        right: 10px;
+    }
+    .password input {
+        width: 100%;
+        padding-right: 30px; /* room for icon */
+    }
+</style>
 
 <body>
-        <div class="row"></div>
-            <div class="col-6 offset-3">
-                <br>
-                <h1>Login on wanderlust</h1>
-                <form method="post" action="/login" novalidate class="needs-validation">
-
-
+    <div class="row">
+        <div class="col-6 offset-3">
+            <br>
+            <h1>Login on wanderlust</h1>
+            <form method="post" action="/login" novalidate class="needs-validation">
                 <label for="username" class="form-label">Username</label>
-                <input name=username placeholder="write Username" type="text" class="form-control" required>
-                <div class="invalid-feedback">Username is required</div>
+                <div class="username">
+                    <input name="username" placeholder="Write Username" type="text" class="form-control" required>
+                    <div class="invalid-feedback">Username is required</div>
+                </div>
 
                 <label for="password" class="form-label">Password</label>
-                <input name=password placeholder="enter password" type="password" class="form-control" required>
-                <div class="invalid-feedback">Password is required</div>
-                
-                <br>
-                <button class="btn-success btn" >Login</button>
-            </div>
-            
+                <div class="password">
+                    <input name="password" id="password" placeholder="Enter password" type="password" class="form-control" required>
+                    <i class="fa-regular fa-eye" id="togglePassword"></i>
+                    <div class="invalid-feedback">Password is required</div>
+                </div>
+
+                <button class="btn-success btn">Login</button>
+            </form>
         </div>
-        
-    </form>
+    </div>
 </body>
+
+<script>
+    const eyeBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    // Show password on press
+    eyeBtn.addEventListener('mousedown', () => {
+        passwordInput.type = 'text';
+        eyeBtn.classList.remove('fa-eye');
+        eyeBtn.classList.add('fa-eye-slash');
+    });
+
+    // Hide password on release
+    eyeBtn.addEventListener('mouseup', () => {
+        passwordInput.type = 'password';
+        eyeBtn.classList.remove('fa-eye-slash');
+        eyeBtn.classList.add('fa-eye');
+    });
+
+    // Also hide on mouse leave (in case user drags away)
+    eyeBtn.addEventListener('mouseleave', () => {
+        passwordInput.type = 'password';
+        eyeBtn.classList.remove('fa-eye-slash');
+        eyeBtn.classList.add('fa-eye');
+    });
+</script>

@@ -1,70 +1,95 @@
-const { types, array } = require('joi');
-const mongoose=require('mongoose');
+const { required } = require('joi');
+const mongoose = require('mongoose');
 
-
-const listingschema=mongoose.Schema({
-    title:{
-        type:String,
-        default:"bye",
+const listingschema = mongoose.Schema({
+    title: {
+        type: String,
+        default: "bye",
     },
-    description:{
-        type:String,
+    description: {
+        type: String,
     },
     image: {
-        type: Object,
-        default: {
-            filename: "listingimage", // Default filename
-            url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60", // Default URL
-        },
+        type: Array,
+        default: [
+            {
+                filename: "listingimage",
+                url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+            },
+            {
+                filename: "listingimage",
+                url: "https://images.unsplash.com/photo-1506748686217-dfb36f7a8a18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fG9jZWFuJTIwbmF0dXJlJTIwY2F0ZWdvcnklMkZpYWwwfHwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
+            },
+            {
+                filename: "listingimage",
+                url: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG93ZWx8ZW58MHx8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+            }
+        ],
         set: function(input) {
-            // Check if an image URL is provided in the input
-            if (input && input.url) {
-                // If a URL is provided, use it
-                return {
-                    filename: "listingimage", // Keep filename fixed as "listingimage"
-                    url: input.url, // Use the provided URL
-                };
+            // Ensure input is an array and not empty
+            if (Array.isArray(input) && input.length > 0) {
+                return input;
             } else {
-                // If no URL is provided, use the default URL
-                return {
-                    filename: "listingimage", // Keep filename fixed as "listingimage"
-                    url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60", // Default URL
-                };
+                // Return default images if input is empty or not an array
+                return [
+                    {
+                        filename: "listingimage",
+                        url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+                    },
+                    {
+                        filename: "listingimage",
+                        url: "https://images.unsplash.com/photo-1506748686217-dfb36f7a8a18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fG9jZWFuJTIwbmF0dXJlJTIwY2F0ZWdvcnklMkZpYWwwfHwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
+                    },
+                    {
+                        filename: "listingimage",
+                        url: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG93ZWx8ZW58MHx8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+                    }
+                ];
             }
         }
-    },    
-    price:{
-        type:Number,
     },
-    location:{
-        type:String,
+    price: {
+        type: Number,
     },
-    country:{
-        type:String,
+    location: {
+        type: String,
     },
-    reviews:[
+    country: {
+        type: String,
+    },
+    reviews: [
         {
-            type:mongoose.Schema.ObjectId,
-            ref:"review"
+            type: mongoose.Schema.ObjectId,
+            ref: "review"
         }
     ],
-    owner:{
-        type:mongoose.Schema.ObjectId,
-        ref:"User"
+    owner: {
+        type: mongoose.Schema.ObjectId,
+        ref: "User"
     },
-    geography:{
-            type: {
-              type: String, // Don't do `{ location: { type: String } }`
-              enum: ['Point'], // 'location.type' must be 'Point'
-              required: true
-            },
-            coordinates: {
-              type: [Number],
-              required: true
-            }
-    }
+    geography: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
+    createAt:{
+        type:Date,
+        default:Date.now()
+    },
+    category_type:{
+        type:String,
+        enum: ['luxury','budget','boutique','resort','hostel','apartment','villa','motel','beach','trending','rooms','iconic_cities','mountain','castles','pools','camping','farm','desert','forest', 'house', 'ferry','airports','ship','bungalow','hotel','cottage'],
+        default:'rooms',
+        required:true,
+    },
 });
 
-const listing=mongoose.model('listing',listingschema);
+const listing = mongoose.model('listing', listingschema);
 
-module.exports=listing;
+module.exports = listing;

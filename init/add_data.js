@@ -1,4 +1,4 @@
-const mongoose=require('mongoose');
+// const mongoose=require('mongoose');
 const listing=require('../models/schema.js');
 const connection=require('../models/connection.js');
 const data=require('./data.js');
@@ -8,7 +8,7 @@ connection();
 let init_data =async ()=>{
     await listing.deleteMany({});
     const newdata = data.map((obj)=>{
-        obj.owner='67e447a987382f5c566acde5';
+        obj.owner='67e6e838934018bb36429ef9';
         return obj;
    });
    console.log(newdata);

@@ -1,6 +1,6 @@
 const listing=require('../models/schema.js');
 const review=require('../models/review_schema.js');
-const expressError=require('../utils/expressError.js');
+// const expressError=require('../utils/expressError.js');
 
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapToken=process.env.MAP_TOKEN;
@@ -13,8 +13,6 @@ module.exports.index=async (req,res)=>{
 }
 
 module.exports.view_listing=async(req,res)=>{
-    
-
     let {id}=req.params;
     let list= await listing.findById(id).populate({path:'reviews',populate:{path:'author'}}).populate('owner');
     if(!list){
@@ -29,16 +27,6 @@ module.exports.new_lisitng_form=(req,res)=>{
 }
 
 module.exports.add_new_listing=async(req,res,next)=>{
-    // if(!req.body.list.image){
-    //     req.body.list.image= {
-    //         filename: "listingimage",
-    //         url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
-    //     }
-    // }
-    // if(!req.body.list){
-    //     throw new expressError(400,'Enter valid data');
-    // }
-
     //for forward geocoding for a location
     const result=await geocodingClient.forwardGeocode({
         query:req.body.list.location ,
@@ -47,16 +35,19 @@ module.exports.add_new_listing=async(req,res,next)=>{
 
 
     let newlist = await new listing(req.body.list);
-    if(req.file){
-        let url=req.file.path;
-        let filename=req.file.filename;
-        newlist.image={url,filename};
+    if(req.files){
+        for(let i=0;i<(req.files).length;i++){
+            let url=req.files[i].path;
+            let filename=req.files[i].filename;
+            newlist.image[i]={url,filename};
+        }
     }
     newlist.owner=req.user._id;
     newlist.geography=result.body.features[0].geometry;  //saving geocoordinates
+    console.log(newlist);
     await newlist.save();
     req.flash('success',"New listing created");
-    res.redirect('/listings')
+    res.redirect('/listings');
 }
 
 module.exports.edit_listing_form=async(req,res)=>{
@@ -67,19 +58,23 @@ module.exports.edit_listing_form=async(req,res)=>{
         req.flash("error","Listing you requested for do not exist");
         res.redirect('/listings');
     }
-    let preview_url=list.image.url.replace('/upload','/upload/ar_1.0,h_150,w_250/bo_5px_solid_lightblue');
+    let preview_url=list.image[0].url.replace('/upload','/upload/ar_1.0,h_150,w_250/bo_5px_solid_lightblue');
     res.render('listings/edit_listing.ejs',{list ,preview_url});
 }
 
 module.exports.update_listing=async(req,res)=>{
     let {id}=req.params;
     await listing.findByIdAndUpdate(id,req.body.list);
-    if(req.file){
-        let url=req.file.path;
-        let filename=req.file.filename;
+    if(req.files){
         let newlist= await listing.findById(id);
-        newlist.image={url,filename};
-        await newlist.save();
+        for(let i=0;i<(req.files).length;i++){
+                let url=req.files[i].path;
+                let filename=req.files[i].filename;
+                console.log(url);
+                console.log(filename);
+                newlist.image[i]={url,filename};
+        }
+        await newlist.save();    
     }
     req.flash('success',"Listing is Updated");
     res.redirect(`/listings/view/${id}`);

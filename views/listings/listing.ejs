@@ -1,34 +1,175 @@
 <%- layout('./layouts/boilerplate.ejs') %>
 
+<style>
+    /* Review styling */
+    .review_cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        justify-content: space-between;
+    }
+
+    .review_user_details {
+        width: 48%;
+        padding: 1rem;
+        border-radius: 10px;
+        overflow: hidden;
+        /* word-wrap: break-word; */
+    }
+
+    .review_user_profile {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .review_user_image {
+        height: 4rem;
+        width: 4rem;
+        border-radius: 50%;
+        margin-right: 1rem;
+    }
+
+    .review_user_info h5 {
+        margin: 0;
+        font-weight: bold;
+    }
+
+    .review_user_info p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: gray;
+    }
+    .review-box{
+        width: 90%;
+    }
+    .review_btns{
+        display: flex;
+        justify-content: space-between;
+    }
+    .review-delete-btn{
+        border: none;
+        margin-top: 0rem;
+        margin-right: 4rem;
+        padding-top: 0rem;
+        text-decoration: underline;
+        color: #dc3545;
+        background:none;
+        cursor: pointer;
+    }
+
+    /* for map */
+    #map{
+        height: 30rem;
+        /* width: 110vh; */
+        border-radius: 3rem;
+    }
+
+    /* for review pop-up */
+
+    .review-comment {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        /* position: relative; */
+    }
+
+    .review-text {
+        max-height: 75px;                   /* Adjust based on your preference */
+        overflow: hidden;
+        text-overflow: ellipsis;           /*for ... at the end of text*/
+        /* white-space: nowrap; */         /* Keep text on one line */ 
+        margin-bottom: 5px;
+    }
+    .read-more {
+        color: #007bff;
+        cursor: pointer;
+        text-decoration: underline;
+        font-size: 0.9rem;
+    }
+    .read-more:hover {
+        text-decoration: none;
+    }
+
+    .popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 90%;
+    max-height: 80vh; /* Limit height */
+    overflow-y: auto;  /* Enable vertical scrolling */
+    z-index: 1000;
+    }
+
+    .popup-close {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        float: right;
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 999;
+    }
+</style>
+
 <body>
     <div class="row">
-        <div class="col-8 offset-2">
+        <div class="col-10 offset-1">
             <h1 class="mt-2 mb-2"><%= list.title %></h1>
-            <div  class="card">
-                <img src="<%=list.image.url%>" class="card-img-top" style="height: 25rem;" alt="/place">
+            <div class="card">
+                <img src="<%= list.image[0].url %>" class="card-img-top" style="height: 27rem;" alt="/place">
                 <div class="card-body mb-1">
                     <p>Hosted by <%= list.owner.username %></p>
-                    <p class="card-text"><b><%=list.title%> </b>
-                        <br><%=list.description%>
-                        <br> &#8377; <%= list.price.toLocaleString('en-IN') %> /Night
-                        <br><%= list.location %>
-                        <br><%= list.country %>
+                    <p class="card-text">
+                        <b><%= list.title %></b><br>
+                        <%= list.description %><br>
+                        &#8377; <%= list.price.toLocaleString('en-IN') %> /Night<br>
+                        <%= list.location %><br>
+                        <%= list.country %>
                     </p>
                 </div>
+                
                 <% if(currUser && list.owner._id.equals(currUser._id)){ %>
                 <div class="row">
                     <div class="col-2">
-                        <button class="btn btn-dark btn-edit"><a style="text-decoration: none;" href="/listings/edit/<%=list._id%>">Edit</a></button>
+                        <button class="btn btn-dark btn-edit">
+                            <a style="text-decoration: none;" href="/listings/edit/<%= list._id %>">Edit</a>
+                        </button>
                     </div>
                     <div class="col-3">
-                        <form method="post" action="/listings/delete/<%=list._id%>?_method=delete">
-                            <button class="btn btn-dark btn-delete ">Delete</button>
+                        <form method="post" action="/listings/delete/<%= list._id %>?_method=delete">
+                            <button class="btn btn-dark btn-delete">Delete</button>
                         </form>
                     </div>
                 </div>
                 <% } %>
             </div>
-            
+
+            <hr>
+            <% if(currUser){ %>
+                <form method="get" action="/booking/<%= list._id %>">
+                    <button>book</button>
+                </form>
+            <% } %>
             <hr>
             <% if(currUser){ %>
             <form method="post" action="/listings/<%= list._id %>/review/add" novalidate class="needs-validation">
@@ -47,64 +188,134 @@
                     <input type="radio" id="first-rate5" name="review[rating]" value=5 />
                     <label for="first-rate5" title="Amazing">5 stars</label>
                 </fieldset>
-  
-                <legend>comment:</legend>
-                <textarea name="review[comment]" class="" placeholder="write your review here" rows="5" cols="15" style="width: 100%;" required></textarea>
-                <div class="invalid-feedback">Enter valid Review</div>
-                <br>
+
+                <legend>Comment:</legend>
+                <textarea name="review[comment]" placeholder="Write your review here" rows="5" cols="15" style="width: 100%;" required></textarea>
+                <div class="invalid-feedback">Enter a valid review</div><br>
                 <button class="btn btn-dark mb-2">Submit</button>
             </form>
-            <% } %>
-            
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-8 offset-2">
-            <% if(list.reviews.length) { %>
-                <h3>Reviews</h3>
-                <div class="row">
-                    <% for (let review of list.reviews) { %>
-                        <div class="col-md-6 mb-2">
-                            <div class="card review-card">
-                                <div class="card-body mb-0">
-                                    <h5>@<%=review.author.username%></h5>
-                                    <p class="starability-result" data-rating="<%= review.rating %>"></p>
-                                    <p class="card-text mb-0"><%= review.comment %></p>
-                                    <p><%= review.rating %> star</p>
-                                    
-                                    <% if(currUser && currUser._id.equals(review.author._id)){ %>
-                                    <form method="POST" action="/listings/<%= list._id %>/review/delete/<%= review._id %>?_method=delete">
-                                        <button type="submit" class="btn btn-dark">Delete</button>
-                                    </form>
-                                    <% } %>
-                                </div>
-                            </div>
-                        </div>
-                    <% } %>
-                </div>
             <% } %>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-8 offset-2">
+        <div class="col-10 offset-1">
+            <% if(list.reviews.length) { %>
+            <h3>Reviews</h3>
+            <hr>
+            <div class="row review_cards">
+                <% for (let review of list.reviews) { %>
+                <div class="review_user_details">
+                    <div class="review_user_profile">
+                        <img class="review_user_image" src="<%= review.author.profile_pic %>" alt="profile">
+                        <div class="review_user_info">
+                            <h5><b>@</b><i><%= review.author.username %></i></h5>
+                            <p class="starability-result" data-rating="<%= review.rating %>"></p>
+                        </div>
+                    </div>
+                    <div class="review-box" id="reviewBox">
+                        <p class="review-text" id="reviewText"><%= review.comment %></p>
+                    </div>
+                    <!-- Popup -->
+                    <div class="overlay" id="overlay"></div>
+                    <div class="popup" id="popup">
+                        <button class="popup-close" id="closePopup">Close</button>
+                        <p id="fullReviewText"><%= review.comment %></p>
+                    </div>
+                    <!-- review buttons -->
+                    <div class="review_btns">
+                        <div><span class="read-more" id="readMoreLink">Read More</span></div>
+                        <% if(currUser && currUser._id.equals(review.author._id)){ %>
+                            <form method="POST" action="/listings/<%= list._id %>/review/delete/<%= review._id %>?_method=delete">
+                                <button type="submit" class="btn btn-dark review-delete-btn">Delete</button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+            
+            <% } %>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-10 offset-1">
+            <hr>
             <h4>Where you'll be</h4>
             <div id="map"></div>
         </div>
     </div>
 
-
-    <!-- all variable can be access in ejs file but not in js file so 
-   this script tag is used for to create variable that can be accessed in js files  -->
+    <!-- Variables for JS -->
     <script>
-        const map_token='<%= process.env.MAP_TOKEN %>';
-        const mapCoordinate=<%- JSON.stringify(list.geography.coordinates) %>;
-        const maplocation=<%-JSON.stringify(list.location)%>
+        const map_token = '<%= process.env.MAP_TOKEN %>';
+        const mapCoordinate = <%- JSON.stringify(list.geography.coordinates) %>;
+        const maplocation = <%- JSON.stringify(list.location) %>;
+        
     </script>
 
-     <!-- for map -->    
+    <!-- For map -->
     <script src="/js/map.js"></script>
+
+    <!-- code for review pop-up -->
+    <script>
+        
+        /**
+         * Selecting all elements related to the review pop-up feature.
+         * Since multiple reviews exist, `querySelectorAll` is used to select all occurrences.
+         */
+        const readMoreLinks = document.querySelectorAll(".read-more");  // "Read More" links for each review
+        const popups = document.querySelectorAll(".popup");             // Pop-up containers for detailed review display
+        const overlays = document.querySelectorAll(".overlay");         // Overlays that appear behind pop-ups
+        const closePopupButtons = document.querySelectorAll(".popup-close");  // Close buttons in pop-ups
+
+        /**
+         * Loop through all "Read More" links and bind event listeners dynamically.
+         * This ensures each "Read More" button opens the correct corresponding pop-up.
+         */
+        readMoreLinks.forEach((readMore, index) => {
+            readMore.addEventListener("click", function () {
+                popups[index].style.display = "block";   // Display the corresponding pop-up
+                overlays[index].style.display = "block"; // Display the overlay
+            });
+        });
+
+        /**
+         * Loop through all "Close" buttons and bind event listeners.
+         * This allows closing the correct pop-up when clicking "Close".
+         */
+        closePopupButtons.forEach((closePopup, index) => {
+            closePopup.addEventListener("click", function () {
+                popups[index].style.display = "none";   // Hide the pop-up
+                overlays[index].style.display = "none"; // Hide the overlay
+            });
+        });
+
+        /**
+         * Loop through all overlay elements and bind event listeners.
+         * Clicking outside the pop-up (on the overlay) should also close the pop-up.
+         */
+        overlays.forEach((overlay, index) => {
+            overlay.addEventListener("click", function () {
+                popups[index].style.display = "none";   // Hide the pop-up
+                overlays[index].style.display = "none"; // Hide the overlay
+            });
+        });
+
+        /**
+         * Hide "Read More" link if text does not overflow.
+         * scrollHeight is the total height of the content (including hidden overflow),
+         * while clientHeight is the height of the visible area (without scrolling).
+         */
+        const reviewTexts = document.querySelectorAll(".review-text");
+        reviewTexts.forEach((reviewText, index) => {
+            if (reviewText.scrollHeight <= reviewText.clientHeight) {
+                readMoreLinks[index].style.display = "none";  // Hide "Read More" if no overflow
+            }
+        });
+
+    </script>
+        
     <br>
 </body>
-

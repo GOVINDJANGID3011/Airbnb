@@ -1,0 +1,575 @@
+<%- layout('./layouts/boilerplate.ejs') %>
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        margin: 0;
+        padding: 0;
+    }
+    .main-content {
+        display: flex;
+        gap: 35px;
+        padding: 20px;
+        width: 100%;
+    }
+
+    .booking-options {
+        width: 20%;
+        /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+        background-color: #f7f7f7;
+    }
+
+    .sticky-bar {
+        position: sticky;
+        top: 5rem;
+        background-color: #fff;
+        padding: 5px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .host-details {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+    .host-details img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    .host-details b {
+        font-size: 18px;
+        color: #343a40;
+    }
+    .host-details p {
+        font-size: 14px;
+        color: #6c757d;
+    }
+    .host-details:hover {
+        background-color: #e9ecef;
+        border-radius: 8px;
+    }
+    .host-details:hover img {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
+    }
+    .host-details:hover b {
+        color: #007bff;
+        transition: color 0.3s ease;
+    }
+    .host-details:hover p {
+        color: #343a40;
+        transition: color 0.3s ease;
+    }
+    .host-details:hover {
+        cursor: pointer;
+    }
+
+    .booking-option {
+        padding: 12px;
+        margin-bottom: 10px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        border: 1px solid #dee2e6;
+        font-weight: 500;
+    }
+
+    .booking-option:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .bookings {
+        width: 80%;
+    }
+
+    .booking-header {
+        font-size: 26px;
+        font-weight: bold;
+        color: #343a40;
+        margin-bottom: 20px;
+        padding-left: 5px;
+    }
+
+    .booking-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .booking-card {
+        background-color: #fff;
+        width: calc(33.333% - 13.33px);
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        transition: box-shadow 0.3s ease;
+        cursor: pointer;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .booking-card:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .booking-card-header {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .booking-card-body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .listing-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .booking-Details {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .listing-details {
+        font-size: 14px;
+        color: #495057;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .listing-details div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+    }
+    .guest-details {
+        font-size: 14px;
+        color: #495057;
+    }
+    .booking-status-text {
+        font-size: 14px;
+        color: #63cad1;
+        font-style: italic;
+
+    }
+    .payment-details {
+        display: flex;
+        justify-content: space-between;
+        border-radius: 0 0 8px 8px;
+        padding: 10px;
+    }
+    .payment-status {
+        font-size: 14px;
+        color: #495057;
+    }
+    .payment-amount {
+        font-size: 16px;
+        font-weight: bold;
+        color: #28a745;
+    }
+    .no-bookings {
+        font-size: 18px;
+        color: #6c757d;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    
+    /* pop-up styling */
+    /* styling for the pop-up booking details */
+    
+    .booking-card-details {
+      display: none;
+      position:fixed;
+      top: 13%;
+      left: 20%;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      height: 80%;
+      width: 60%;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      overflow-y:auto;
+      overflow-x: hidden;
+      padding-top: 4rem;
+  }
+  .close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+  }
+  .booking-card-details p {
+      margin: 0;
+      font-size: 1rem;
+      color: #666;
+  }
+  .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
+  }
+
+  .status{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 1rem;
+      margin-right: 3rem;
+  }
+  .status p {
+      font-size: 1rem;
+      
+  }
+  .my_details {
+      display: flex;
+      width: 100%;
+  }
+  .my_details .details {
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+  }
+  .my_details .details p b {
+      font-size: .9rem;
+  }
+  .my_details .booked_img {
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content:start;
+      align-items:end;
+  }
+  .my_details .booked_img img {
+      margin-top: 2rem;
+      width:215px;
+      height:215px;
+      border-radius: 8px;
+  }
+ .base_prices{
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+      margin-top: 1rem;
+      /* padding-right: 2rem; */
+  }
+  .base_prices .base_price {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-right: 2rem;
+  }
+  .base_prices .base_price p {
+      margin: 0;
+  }
+  .payment_details {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+  }
+  .payment_details h3 {
+      margin-top: 2rem;
+  }
+
+
+  @media screen and (max-width: 768px) {
+        .booking-card {
+            width: 100%;
+        }
+        .booking-options {
+            display: none;
+        }
+    }
+
+</style>
+
+<div class="main-content">
+    <div class="booking-options">
+        <div class="sticky-bar">
+            <div class="host-details">
+                <img src="<%= currUser.profile_pic %>" alt="">
+                <div>
+                    <b><%= currUser.username %></b>
+                    <p><%= currUser.email %></p>
+                </div>
+            </div>
+            <div class="booking-option all-booking-btn">All bookings</div>
+            <div class="booking-option upcoming-booking-btn">Upcoming bookings</div>
+            <div class="booking-option past-booking-btn">Past bookings</div>
+            <div class="booking-option cancelled-booking-btn">Cancelled bookings</div>
+            <div class="booking-option rejected-booking-btn">Rejected bookings</div>
+            <div class="booking-option">Coming Soon</div>
+        </div>
+    </div>
+
+    <div class="bookings">
+        <div class="all_bookings_header">
+            <h2>Welcome, <%=user.username%>!</h2>
+        </div><br><br>
+        <div class="all_bookings_header">
+            <h2>Host Bookings</h2>
+        </div>
+        <hr>
+        <div class="booking-header">Booking Details</div>
+        <div class="booking-cards">
+            <% if (user.host_bookings.length > 0) { %>
+                <% user.host_bookings.forEach((booking) => { %>
+                    <div class="booking-card">
+                        <div class="booking-card-header">Booking ID: <%= booking._id %></div>
+                        <img src="<%= booking.bookedlisting.image[0].url %>" alt="listing image" class="listing-image">
+                        <div class="booking-card-body">
+                            <div class="booking-Details">
+                                <div class="listing-details">
+                                    <div>
+                                        <b><%=booking.bookedlisting.title%></b>
+                                        <%=booking.bookedlisting.location%>, <%=booking.bookedlisting.country%>
+                                    </div>
+                                    <div class="booking-status-text">Status: <%= booking.bookingStatus %></div>
+                                </div>
+                                <hr>
+                                <div class="guest-details">
+                                    <div>Guest Name: <%= booking.fullname %></div>
+                                    <div class="check-in-date">Check-in:<%= booking.checkin.toString().substr(0,15)%></div>
+                                    <div class="check-out-date">Check-out:<%= booking.checkout.toString().substr(0,15) %></div>
+                                    <div>Guests: 1</div>
+                                </div>
+                            </div>
+                            <hr style="margin:0 5px;">
+                            <div class="payment-details">
+                                <div class="booking-status">
+                                    <div class="payment-status">Payment: panding</div>
+                                    <%
+                                        // Calculate the number of milliseconds in one day:
+                                        // 1000 (ms/sec) * 60 (sec/min) * 60 (min/hour) * 24 (hours/day) = 86,400,000 ms/day
+                                        const oneDay = 1000 * 60 * 60 * 24;
+
+                                        // Convert check-in and check-out to Date objects
+                                        const checkinDate = new Date(booking.checkin);
+                                        const checkoutDate = new Date(booking.checkout);
+
+                                        // Calculate the number of nights
+                                        const nights = Math.ceil((checkoutDate - checkinDate) / oneDay);
+
+                                        // Base price calculation (1 adult * price per night * nights)
+                                        const pricePerNight = booking.bookedlisting.price;
+                                        const basePrice = pricePerNight * nights;
+
+                                        // Tax (18%)
+                                        const tax = basePrice * 0.18;
+
+                                        // Total amount including tax
+                                        const total = basePrice + tax;
+                                    %>
+                                    <div class="payment-amount">&#8377; <%= total.toFixed(2) %></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- pop-up for booking details-->
+                    <div class="overlay"></div>
+                    <div class="booking-card-details" id="booking-card-details-<%=booking._id%>">
+                        <button class="close">Close</button>
+                        <div class="status">
+                            <div>
+                                <p><b>Booking ID</b>: <%=booking._id%></p>
+                                <p><%= new Date(booking.bookingAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                            </div>
+                            <p><b>Booking Status</b>: <%=booking.bookingStatus%></p>
+                        </div>
+                        <div class="my_details">
+                            <div class="details">
+                                <h3>Booking Details</h3>
+                                <hr style="margin-top: .5rem;">
+                                <p><b>Guest Name</b>: <%=booking.fullname%></p>
+                                <p><b>Email</b>: <%=booking.bookinguser.email%></p>
+                                <p><b>Phone</b>: <%=booking.phone_no%></p>
+                                <p><b>Check-in</b>: <%= new Date(booking.checkin).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %> at 11.00am</p>
+                                <p><b>Check-out</b>: <%= new Date(booking.checkout).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %> at 11.00am</p>
+                                <p><b>No of Guests</b>: 1</p>
+                                <p><b>No of Rooms</b>: 1</p>
+                            </div>
+                            <div class="booked_img">
+                                <img src="<%=booking.bookedlisting.image[0].url%>" alt="booked listing">
+                                <b><%=booking.bookedlisting.title%></b>
+                                <%=booking.bookedlisting.location%>, <%=booking.bookedlisting.country%>
+                            </div>
+                        </div>
+                        <div class="payment_details">
+                            <h3>Payment Details</h3>
+                            <hr style="margin-top: .5rem;">
+                            <p><b>Payment ID</b>: ------ </p>
+                            <p><b>Payment Status</b>: Panding</p>
+                            <p><b>Payment Method</b>: Cash</p>
+                            <p><b>Payment Date</b>: No payment done yet</p>
+                            <p><b>Amount</b>:  &#8377;<%= (booking.bookedlisting.price * 1.18).toFixed(2) %>/night</p>
+                            <br>
+                            <h4>Payment Summary</h4>
+                            
+                            <div class="base_prices">
+                              <div class="base_price">
+                                <p><b>Adult</b></p>
+                                <p>1 * &#8377; <%= pricePerNight %></p>
+                              </div>
+                              <div class="base_price">
+                                <p><b>Children</b></p>
+                                <p>0 * &#8377; <%= pricePerNight %></p>
+                              </div>
+                              <div class="base_price">
+                                <p><b>Pet</b></p>
+                                <p>0 * &#8377; 0</p>
+                              </div>
+                              <div class="base_price">
+                                <p><b>Total Nights</b></p>
+                                <p><%= nights %></p>
+                              </div>
+                              <hr style="width: 120%;">
+                          
+                              <div class="base_price">
+                                <p><b>Total Base Price</b></p>
+                                <p>: &#8377; <%= basePrice.toFixed(2) %></p>
+                              </div>
+                              <div class="base_price">
+                                <p><b>Tax</b></p>
+                                <p>: &#8377; <%= tax.toFixed(2) %></p>
+                              </div>
+                              <div class="base_price">
+                                <p><b>Total Amount</b></p>
+                                <p>: &#8377; <%= total.toFixed(2) %></p>
+                              </div>
+                              <div class="base_price">
+                                <p><b>Paid Amount</b></p>
+                                <p>: &#8377; 0</p>
+                              </div>
+                              <div class="base_price">
+                                <p><b>Pending Amount</b></p>
+                                <p>: &#8377; <%= total.toFixed(2) %></p>
+                              </div>
+                            </div>                        
+                            <br>
+                            <p><b>Payment Method</b>: Cash</p>
+                            <p><b>Payment Status</b>: Panding</p>
+                            <p><b>Payment Date</b>: No payment done yet</p>
+                            <p><b>Payment ID</b>: ------ </p>
+                        </div><br>
+                        <div class="host_details">
+                            <h3>Contact Your Host</h3>
+                            <hr style="margin-top: .5rem;">
+                            <p><b>Host Name</b>: <%=booking.owneruser.username%></p>
+                            <p><b>Email</b>: <%=booking.owneruser.email%></p>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="no-bookings">No bookings available</div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+    const bookingCardsBox = document.querySelector('.booking-cards');
+    const all_cards = Array.from(document.querySelectorAll('.booking-card'));
+    const bookingDetails = document.querySelectorAll('.booking-card-details');
+    const popupclosebtn = document.querySelectorAll('.close');
+    const overlay = document.querySelector('.overlay');
+    
+
+    const allbookingsbtn = document.querySelector('.all-booking-btn');
+    const upcomingbookingsbtn = document.querySelector('.upcoming-booking-btn');
+    const pastbookingsbtn = document.querySelector('.past-booking-btn');
+    
+
+    // logic for opening and closing the pop-up booking details
+    all_cards.forEach((card, index) => {
+        card.addEventListener('click', () => {
+            const overlay = document.querySelector('.overlay');
+            overlay.style.display = 'block';
+            bookingDetails[index].style.display = 'block';
+        });
+    });
+    
+    popupclosebtn.forEach((button, index) => {
+        button.addEventListener('click', () => {
+            bookingDetails[index].style.display = 'none';
+            overlay.style.display = 'none';
+        });
+    });
+    overlay.addEventListener('click', () => {
+        bookingDetails.forEach((details) => {
+            details.style.display = 'none';
+        });
+        overlay.style.display = 'none';
+    });
+
+    // logic for showing all bookings, upcoming bookings, past bookings, and cancelled bookings
+    allbookingsbtn.addEventListener('click', () => {
+        bookingCardsBox.innerHTML = "";
+        all_cards.forEach((card) => {
+            bookingCardsBox.appendChild(card);
+        });
+    });
+    
+    upcomingbookingsbtn.addEventListener('click', () => {
+        bookingCardsBox.innerHTML = "";
+        bookingCards.forEach((card) => {
+            const checkinDate = new Date(card.querySelector('.check-in-date').textContent);
+            const today = new Date();
+            if (checkinDate >= today) {
+                bookingCardsBox.appendChild(card);
+            }
+        });
+    });
+    
+    pastbookingsbtn.addEventListener('click', () => {
+        bookingCardsBox.innerHTML = "";
+        const today = new Date();
+        all_cards.forEach((card) => {
+            const checkinDate = new Date(card.querySelector('.check-in-date').textContent);
+            if (checkinDate < today) {
+                bookingCardsBox.appendChild(card);
+            }
+        });
+    });
+
+</script>

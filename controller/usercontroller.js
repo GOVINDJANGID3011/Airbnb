@@ -1,6 +1,4 @@
 const User=require('../models/user_schema.js');
-const expressError=require('../utils/expressError.js');
-
 
 module.exports.signup_form=(req,res)=>{
     res.render('./users/signin.ejs');

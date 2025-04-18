@@ -1,6 +1,6 @@
 const listing=require('../models/schema.js');
 const review=require('../models/review_schema.js');
-const expressError=require('../utils/expressError.js');
+// const expressError=require('../utils/expressError.js');
 
 
 module.exports.add_review=async(req,res)=>{
@@ -8,6 +8,7 @@ module.exports.add_review=async(req,res)=>{
     newreview.author=req.user._id;
     let newlisting=await listing.findById(req.params.id);
     await newlisting.reviews.push(newreview);
+    console.log(newreview);
     await newreview.save();
     await newlisting.save();
     req.flash('success',"New Review Created");

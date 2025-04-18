@@ -1,112 +1,243 @@
 <%- layout('./layouts/boilerplate.ejs') %>
 
 <style>
-    .filters{
+    .filters {
+        margin-top:1rem;
         padding-top: 1rem;
-        /* margin-left: 1rem; */
         display: flex;
-        flex-wrap: wrap;
-        height: 6rem;
     }
-    .filter{
+
+    .scroll-wrapper {
+        display: flex;
+        max-width: 100%;
+        gap: 1rem;
+    }
+
+    .scrollContainer {
+        display: flex;
+        overflow-x: auto;
+        gap: 1rem;
+        max-width: 70%;
+    }
+
+    .scrollContainer::-webkit-scrollbar {
+        display: none;
+    }
+
+    .filter {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        margin-left: 2rem;
-        opacity: .7;
+        align-items: center;
+        min-width: 60px;
+        opacity: 0.7;
+        transition: opacity 0.2s ease-in-out;
     }
-    .filter:hover{
+    .filter p {
+        font-size: .9rem;
+        color: #000;
+    }
+
+    .filter:hover {
         opacity: 1;
         cursor: pointer;
     }
-    .tax-info{
+
+    .tax-info {
         display: flex;
+        justify-self:center;
         align-items: center;
-        border: .1rem rgb(180, 175, 175) solid;
+        border: 0.1rem rgb(180, 175, 175) solid;
         border-radius: 1rem;
         height: 3rem;
-        margin:.5rem 0rem 0rem 5rem;
-        padding: 0rem 1rem;
+        max-width:25rem;
+        padding: 0 1rem;
     }
-    .taxes{
+
+    .taxes {
         display: none;
+    }
+
+    .scroll-button {
+        width: 2rem;
+        height: 2rem;
+        border: .05rem solid rgba(0, 0, 0, 0.2);
+        color: #000;
+        border-radius:50%;
+        cursor: pointer;
+    }
+
+    .scroll-button:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+    transition: all 0.2s ease-in-out;
+    }
+
+    .scroll-left {
+        position:relative;
+        top: .3rem;
+        left: 1rem;
+        height: 1.5rem;
+        width: 1.5rem;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: .112 solid black;
+    }
+
+    .scroll-right {
+        position:relative;
+        top: .3rem;
+        right:1rem;
+        height: 1.5rem;
+        width: 1.5rem;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: .112 solid black;
     }
 </style>
 
 <body>
     <div class="filters">
-        <div class="filter">
-            <i class="fa-solid fa-umbrella-beach"></i>
-            <p>Beach</p>
-        </div>
-        <div class="filter">
-            <i class="fa-solid fa-fire"></i>
-            <p>Trending</p>
-        </div>
-        <div class="filter">
-            <i class="fa-solid fa-bed"></i>
-            <p>Rooms</p>
-        </div>
-        <div class="filter">
-            <i class="fa-solid fa-city"></i>
-            <p>Iconic cities</p>
-        </div>
-        <div class="filter">
-            <i class="fa-solid fa-mountain-sun"></i>
-            <p>Mountain</p>
-        </div>
-        <div class="filter">
-            <i class="fa-solid fa-chess-rook"></i>
-            <p>Castles</p>
-        </div>
-        <div class="filter">
-            <i class="fa-solid fa-person-swimming"></i>
-            <p>Amaging Pools</p>
-        </div>
-        <div class="filter">
-            <i class="fa-solid fa-campground"></i>
-            <p>Camping</p>
-        </div>
-        <div class="filter">
-            <i class="fa-solid fa-tractor"></i>
-            <p>Farms</p>
-        </div>
-
-
-        <div class="tax-info">
-            <div class="form-check form-switch form-check-reverse">
-                <input class="form-check-input" type="checkbox" id="flexSwitchCheckReverse">
-                <label class="form-check-label" for="flexSwitchCheckReverse">Display total after taxes</label>
-              </div>
+        <!-- Scrollable section -->
+        <div class="scroll-wrapper">
+            <!-- Scroll Buttons -->
+            <button class="scroll-button scroll-left" id="scrollLeft">&lt;</button>
+            <!-- Scrollable Icon Filters -->
+            <div class="scrollContainer" id="scrollContainer">
+                <div class="filter" value="beach"><i class="fa-solid fa-umbrella-beach"></i><p>Beach</p></div>
+                <div class="filter" value="trending"><i class="fa-solid fa-fire"></i><p>Trending</p></div>
+                <div class="filter" value="rooms"><i class="fa-solid fa-bed"></i><p>Rooms</p></div>
+                <div class="filter" value="iconic_cities"><i class="fa-solid fa-city"></i><p>Iconic cities</p></div>
+                <div class="filter" value="mountain"><i class="fa-solid fa-mountain-sun"></i><p>Mountain</p></div>
+                <div class="filter" value="castles"><i class="fa-solid fa-chess-rook"></i><p>Castles</p></div>
+                <div class="filter" value="pools"><i class="fa-solid fa-person-swimming"></i><p>Pools</p></div>
+                <div class="filter" value="camping"><i class="fa-solid fa-campground"></i><p>Camping</p></div>
+                <div class="filter" value="farms"><i class="fa-solid fa-tractor"></i><p>Farms</p></div>
+                <div class="filter" value="desert"><i class="fa-solid fa-water"></i><p>Desert</p></div>
+                <div class="filter" value="forest"><i class="fa-solid fa-tree"></i><p>Forest</p></div>
+                <div class="filter" value="house"><i class="fa-solid fa-house"></i><p>House</p></div>
+                <div class="filter" value="ferry"><i class="fa-solid fa-ferry"></i><p>Ferry</p></div>
+                <div class="filter" value="airports"><i class="fa-solid fa-plane"></i><p>Airports</p></div>
+                <div class="filter" value="ship"><i class="fa-solid fa-ship"></i><p>Ship</p></div>
+                <div class="filter" value="bungalow"><i class="fa-solid fa-igloo"></i><p>Bungalow</p></div>
+                <div class="filter" value="apartments"><i class="fa-solid fa-building"></i><p>Apartments</p></div>
+                <div class="filter" value="hotels"><i class="fa-solid fa-hotel"></i><p>Hotels</p></div> 
+                <div class="filter" value="luxury"><i class="fa-solid fa-gem"></i><p>Luxury</p></div>
+                <div class="filter" value="budget"><i class="fa-solid fa-wallet"></i><p>Budget</p></div>
+                <div class="filter" value="boutique"><i class="fa-solid fa-store"></i><p>Boutique</p></div>
+                <div class="filter" value="resort"><i class="fa-solid fa-spa"></i><p>Resort</p></div>
+                <div class="filter" value="hostel"><i class="fa-solid fa-users"></i><p>Hostel</p></div>
+                <div class="filter" value="apartment"><i class="fa-solid fa-building"></i><p>Apartment</p></div>
+                <div class="filter" value="villa"><i class="fa-solid fa-hotel"></i><p>Villa</p></div>
+                <div class="filter" value="motel"><i class="fa-solid fa-road"></i><p>Motel</p></div>
+            </div>
+            <button class="scroll-button scroll-right" id="scrollRight">&gt;</button>
+            <!-- Tax Toggle -->
+            <div class="tax-info">
+                <div class="form-check form-switch form-check-reverse">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckReverse">
+                    <label class="form-check-label" for="flexSwitchCheckReverse">Display total after taxes</label>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Listings -->
     <div class="all_cards">
-        <%for(let list of all_listings){%>
-            <a class="card-link"  href="/listings/view/<%=list._id%>">
-                <div  class="card" style="width: 18rem;">
-                    <img src="<%=list.image.url%>" class="card-img-top" alt="/place">
-                    <!-- this div of class 'card-img-overlay' is use to write on img , and it used to place after img -->
+        <% for (let list of all_listings) { %>
+            <a class="card-link" href="/listings/view/<%= list._id %>">
+                <div class="card" style="width: 18rem;">
+                    <img src="<%= list.image[0].url %>" class="card-img-top" alt="place">
                     <div class="card-img-overlay"></div>
                     <div class="card-body">
-                      <p class="card-text"><b><%=list.title%> </b><br>
-                        &#8377; <%= list.price.toLocaleString('en-IN') %> /Night
-                        <i class='taxes'>+18% GST</i>
-                    </p>
+                        <p class="card-text">
+                            <b><%= list.title %></b><br>
+                            &#8377; <%= list.price.toLocaleString('en-IN') %> /Night
+                            <i class="taxes">+18% GST</i>
+
+
+                            <!-- Add this line for filtering logic -->
+                            <span class="category-value" style="display: none;"><%= list.category_type %></span>
+                        </p>
                     </div>
                 </div>
             </a>
-        <%}%>
+        <% } %>
     </div>
 
+    <!-- Script Section -->
     <script>
-        let taxbtn=document.querySelector('#flexSwitchCheckReverse');
-        console.log(taxbtn);
-        taxbtn.addEventListener('click',()=>{
-            let taxInfo=document.querySelectorAll('.taxes');
-            for(let tax of taxInfo){
-                if(tax.style.display!='inline')tax.style.display='inline';
-                else tax.style.display='none';
+        const scrollContainer = document.getElementById('scrollContainer');
+        const scrollLeft = document.getElementById('scrollLeft');
+        const scrollRight = document.getElementById('scrollRight');
+
+        // Scroll left and right functionality
+        scrollLeft.addEventListener('click', () => {
+            scrollContainer.scrollBy({ left: -200, behavior: 'smooth' });
+        });
+
+        scrollRight.addEventListener('click', () => {
+            scrollContainer.scrollBy({ left: 200, behavior: 'smooth' });
+        });
+
+        
+        const taxToggle = document.getElementById('flexSwitchCheckReverse');
+        taxToggle.addEventListener('click', () => {
+            const taxInfo = document.querySelectorAll('.taxes');
+            for (let tax of taxInfo) {
+                tax.style.display = tax.style.display === 'inline' ? 'none' : 'inline';
             }
-        }) 
+        });
+
+
+        // logic for filtering listings based on selected filter(scroll-wrapper)
+        // Filtering Logic
+        const filters = document.querySelectorAll('.filter');
+        const all_listings = Array.from(document.querySelectorAll('.card-link'));
+        const all_cards = document.querySelector('.all_cards');
+
+        filters.forEach(filter => {
+            filter.addEventListener('click', () => {
+                const filterValue = filter.getAttribute('value');
+                all_cards.innerHTML = ''; // Clear listings
+
+                all_listings.forEach(listing => {
+                    const categorySpan = listing.querySelector('.category-value');
+                    let category = '';
+                    if (categorySpan) {category = categorySpan.textContent.trim();}
+                    if (category === filterValue) {
+                        all_cards.appendChild(listing);
+                    }
+                });
+            });
+        });
+
+
+        //  Search Functionality
+        const searchBtn = document.querySelector('.search_box form button');
+        const searchInput = document.querySelector('.search_box form input');
+        const allCards = document.querySelector('.all_cards');
+        const all_Listings = Array.from(document.querySelectorAll('.card-link'));
+        // Search functionality
+        searchBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent form submission , it prevents the page default action of reloading
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (searchTerm !== '') { // If search term is not empty than filter listings
+                allCards.innerHTML = ''; // Clear listings
+                all_Listings.forEach(listing => {
+                    const title = listing.querySelector('.card-text b').textContent.toLowerCase();
+                    if(title.includes(searchTerm))allCards.appendChild(listing);
+                });
+            }
+            else {  // If search term is empty, show all listings
+                allCards.innerHTML = ''; // Clear listings
+                all_Listings.forEach(listing => {
+                    allCards.appendChild(listing);
+                });
+            }
+        });  
     </script>
 </body>
