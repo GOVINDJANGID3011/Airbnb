@@ -8,11 +8,11 @@ module.exports.add_review=async(req,res)=>{
     newreview.author=req.user._id;
     let newlisting=await listing.findById(req.params.id);
     await newlisting.reviews.push(newreview);
-    console.log(newreview);
     await newreview.save();
     await newlisting.save();
     req.flash('success',"New Review Created");
-    res.redirect(`/listings/view/${req.params.id}`)
+    res.redirect(`/listings/view/${req.params.id}`);
+    console.log("successfully added new review");
 }
 
 module.exports.destroy_review=async(req,res)=>{
@@ -21,4 +21,5 @@ module.exports.destroy_review=async(req,res)=>{
     await review.findByIdAndDelete(review_id);
     req.flash('success',"Review Deleted");
     res.redirect(`/listings/view/${id}`);
+    console.log("successfully deleted the review");
 }

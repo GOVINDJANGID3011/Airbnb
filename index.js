@@ -1,4 +1,4 @@
-if(process.env.NODE_EVN!="production"){
+if(process.env.NODE_EVN!=="production"){
     require("dotenv").config();
 }
 
@@ -11,7 +11,7 @@ const expressError=require('./utils/expressError.js');
 const listingRouter=require('./routes/listings.js')
 const reviewRouter=require('./routes/reviews.js');
 const userRouter=require('./routes/user.js');
-const bookingRouter=require('./routes/booking.js')
+const bookingRouter=require('./routes/booking.js');
 const session=require('express-session');
 const MongoStore=require('connect-mongo');
 const flash=require('connect-flash');
@@ -32,6 +32,8 @@ app.use(methodOverride('_method'));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 
+
+// we use this(store) when we render the site online =>
 
 const store=MongoStore.create({
     mongoUrl:mongo_url,
@@ -74,28 +76,35 @@ app.use((req,res,next)=>{
     next();
 })
 
+//root route
+app.get('/',(req,res)=>{
+    res.redirect('/listings');
+})
+
 //routes
 app.use('/listings',listingRouter);
 app.use('/listings/:id/review',reviewRouter);
 app.use('/',userRouter);
 app.use('/booking',bookingRouter);
 
-//root route
-app.use('/',(req,res)=>{
-    res.redirect('./listings');
-})
-// checking port
-app.listen(port,()=>{
-    console.log("app is listening");
-})
 
 //Rest routes
 app.all('*',(req,res,next)=>{
-    next(new expressError('404','page not found'));
+    // printing the error and route where it occurred
+    console.log(`failed , page not found at ${req.originalUrl}`);
+    console.log("failed , page not found");
+    next(new expressError(404,'page not found'));
 })
 
 // handling error by custom middleware
 app.use((err,req,res,next)=>{
    let {statusCode=500,message='Something went wrong'}=err;
    res.render('listings/error.ejs',{message});
+   console.log("failed , some error occurred");
+   console.log(err);
+})
+
+// checking port
+app.listen(port,()=>{
+    console.log("app is listening");
 })

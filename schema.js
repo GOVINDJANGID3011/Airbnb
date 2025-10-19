@@ -21,27 +21,69 @@ module.exports.reviewValidationSchema = Joi.object({
 });
 
 module.exports.bookingValidationSchema = Joi.object({
-    fullname: Joi.string().required(),
+    fullname: Joi.string()
+        .trim()                           // remove extra spaces
+        .replace(/\s{2,}/g, " ")          // replace multiple spaces with one
+        .min(3)                           // at least 3 chars
+        .max(50)                          // max 50 chars
+        .pattern(/^(?!\s)(?!.*\s$)[a-zA-Z\s]+$/) // only letters & spaces, no leading/trailing space
+        .required()
+        .messages({
+            "string.empty": "Full name is required",
+            "string.min": "Full name must be at least 3 characters",
+            "string.max": "Full name must not exceed 50 characters",
+            "string.pattern.base": "Full name must only contain letters and spaces (no leading/trailing spaces)",
+        }),
+
     phone_no: Joi.string()
-        .pattern(/^[0-9]{10}$/)
+        .trim()
+        .pattern(/^[6-9][0-9]{9}$/)        // stricter: must start with 6–9 (common mobile number format)
         .required()
         .messages({
-            'string.pattern.base': 'Phone number must be exactly 10 digits',
+            "string.empty": "Phone number is required",
+            "string.pattern.base": "Phone number must be exactly 10 digits and start with 6, 7, 8, or 9",
         }),
+
     checkin: Joi.date()
-        .min('now')
+        .min(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000))     // cannot be in past
+        .max(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)) // within 1 year
         .required()
         .messages({
-            'date.min': 'Check-in date cannot be in the past',
+          "date.base": "Check-in must be a valid date",
+          "date.min": "Check-in date cannot be before today",
+          "date.max": "Check-in date cannot be more than 1 year from today",
+          "any.required": "Check-in date is required",
         }),
+
     checkout: Joi.date()
-        .min('now')
-        .greater(Joi.ref('checkin'))
+        .greater(Joi.ref("checkin"))                   // must be after checkin
+        .max(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)) // within 1 year
         .required()
         .messages({
-            'date.min': 'Checkout date cannot be in the past',
-            'date.greater': 'Checkout date must be after check-in date',
+            "date.base": "Checkout must be a valid date",
+            "date.greater": "Checkout date must be strictly after check-in date",
+            "date.max": "Checkout date cannot be more than 1 year from today",
+            "any.required": "Checkout date is required",
         }),
-    bookingAt: Joi.date().optional(),
-    bookingStatus: Joi.string().valid('pending', 'confirmed', 'cancelled').optional(),
-});
+
+
+
+    bookingAt: Joi.date()
+        .less("now")                       // bookingAt must be in past
+        .max("now")                        // cannot be future
+        .optional()
+        .messages({
+            "date.base": "Booking time must be a valid date",
+            "date.less": "Booking time cannot be in the future",
+            "date.max": "Booking time cannot be in the future",
+        }),
+
+    bookingStatus: Joi.string()
+        .valid("pending", "confirmed", "cancelled")
+        .insensitive()                     // case-insensitive
+        .default("pending")
+        .optional()
+        .messages({
+            "any.only": "Booking status must be one of pending, confirmed, cancelled",
+        }),
+    });

@@ -1,4 +1,4 @@
-// require('dotenv').config({ path: '../.env' });   // use only when you running  add_data.js file because that time without config you can't access keys of .env file
+require('dotenv').config({ path: '../.env' });   // use only when you running  add_data.js file because that time without config you can't access keys of .env file
 const mongoose=require('mongoose');
 
 let builtconnection= async ()=>{

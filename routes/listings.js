@@ -24,13 +24,10 @@ router.route('/view/:id')
 
 
 router.route('/new_listing')
-        .get(isLogged,wrapAsync(listingcontroller.new_lisitng_form));       // Add listing route
+        .get(isLogged,wrapAsync(listingcontroller.new_listing_form));       // Add listing route
 
 router.route('/add')   
-        .post(upload.array('images[]',10),
-        listingvalidation,
-        wrapAsync(listingcontroller.add_new_listing)
-);
+        .post(upload.array('images[]',10),listingvalidation,wrapAsync(listingcontroller.add_new_listing));
 
 
 router.route('/edit/:id')

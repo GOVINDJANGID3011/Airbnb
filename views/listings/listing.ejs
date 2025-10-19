@@ -165,13 +165,19 @@
             </div>
 
             <hr>
-            <% if(currUser){ %>
-                <form method="get" action="/booking/<%= list._id %>">
-                    <button>book</button>
-                </form>
+            
+            <!-- booking button -->
+            <% if(currUser && list.owner._id.equals(currUser._id)){ %>
+            <h3 class="text-danger ">You cannot book your own listing</h3>
+            <% } else { %>
+            <form method="get" action="/booking/<%= list._id %>">
+                <button class="btn btn-dark btn-edit">book</button>
+            </form>
             <% } %>
+
+            <!-- add review -->
+            <% if(currUser || list.reviews.length){ %>
             <hr>
-            <% if(currUser){ %>
             <form method="post" action="/listings/<%= list._id %>/review/add" novalidate class="needs-validation">
                 <h3>Add a review</h3>
                 <fieldset class="starability-slot">
