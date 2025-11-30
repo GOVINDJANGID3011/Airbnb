@@ -35,19 +35,19 @@ app.use(express.json());
 
 // we use this(store) when we render the site online =>
 
-// const store=MongoStore.create({
-//     mongoUrl:mongo_url,
-//     crypto:{
-//         secret:process.env.MYSECRET,
-//     },
-//     touchAfter:24*60*60 //in seconds
-// });
-// store.on("error",()=>{
-//     console.log("Error in mongo session store ",err);
-// })
+const store=MongoStore.create({
+    mongoUrl:mongo_url,
+    crypto:{
+        secret:process.env.MYSECRET,
+    },
+    touchAfter:24*60*60 //in seconds
+});
+store.on("error",()=>{
+    console.log("Error in mongo session store ",err);
+})
 
 const sessionOptions={
-    // store:store,
+    store:store,
     secret:process.env.MYSECRET,
     resave:false,
     saveUninitialized:true,
