@@ -6,6 +6,10 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
     profile_pic: {
         type: String,
         default: "https://i.pinimg.com/736x/71/e0/19/71e019156ea27ecd99e0fd6a91804054.jpg",
@@ -24,6 +28,11 @@ const userSchema = mongoose.Schema({
     ],
 });
 
+
+// here plugin the passport local mongoose to userSchema for authentication purpose 
+// it will add username , hash and salt field(keys) to userSchema automatically 
+// it only add hash and salt fields not bcrypt password field
+//  bcrypt is handled by register method of passport local mongoose which we used in signup controller
 userSchema.plugin(passportLocalMongoose);
 
 module.exports = new mongoose.model("User", userSchema);
