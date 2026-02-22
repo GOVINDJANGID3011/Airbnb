@@ -9,7 +9,8 @@ module.exports.listingValidationSchema = Joi.object({
         location: Joi.string().required(),
         country: Joi.string().required(),
         category_type: Joi.string().valid('luxury','budget','boutique','resort','hostel','apartment','villa','motel','beach','trending','rooms','iconic_cities','mountain','castles','pools','camping','farm','desert','forest', 'house', 'ferry','airports','ship','bungalow','hotel','cottage').required(),
-    }).required(),   
+    }).required(),
+    deletedImages: Joi.string().optional()    // it can be empty too
 });
 
 

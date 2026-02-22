@@ -4,25 +4,32 @@ const mongoose = require('mongoose');
 const listingschema = mongoose.Schema({
     title: {
         type: String,
-        default: "bye",
+        required: [true, 'Title is required'],
+        trim: true,
+        minlength: [3, 'Title must be at least 3 characters'],
+        maxlength: [100, 'Title cannot exceed 100 characters']
     },
     description: {
         type: String,
+        required: [true, 'Description is required'],
+        trim: true,
+        minlength: [10, 'Description must be at least 10 characters'],
+        maxlength: [1000, 'Description cannot exceed 1000 characters']
     },
     image: {
         type: Array,
         default: [
             {
                 filename: "listingimage",
-                url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+                url: "/images/sample_house_1.jpg",
             },
             {
                 filename: "listingimage",
-                url: "https://images.unsplash.com/photo-1506748686217-dfb36f7a8a18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fG9jZWFuJTIwbmF0dXJlJTIwY2F0ZWdvcnklMkZpYWwwfHwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
+                url: "/images/sample_house_2.jpg",                    
             },
             {
                 filename: "listingimage",
-                url: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG93ZWx8ZW58MHx8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+                url: "/images/sample_house_3.jpg",                    
             }
         ],
         set: function(input) {
@@ -34,28 +41,32 @@ const listingschema = mongoose.Schema({
                 return [
                     {
                         filename: "listingimage",
-                        url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+                        url: "/images/sample_house_1.jpg",
                     },
                     {
                         filename: "listingimage",
-                        url: "https://images.unsplash.com/photo-1506748686217-dfb36f7a8a18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fG9jZWFuJTIwbmF0dXJlJTIwY2F0ZWdvcnklMkZpYWwwfHwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-                    },
+                        url: "/images/sample_house_2.jpg",                    },
                     {
                         filename: "listingimage",
-                        url: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG93ZWx8ZW58MHx8fDB8fHww&auto=format&fit=crop&w=800&q=60",
-                    }
+                        url: "/images/sample_house_3.jpg",                    }
                 ];
             }
         }
     },
     price: {
         type: Number,
+        required: [true, 'Price is required'],
+        min: [0, 'Price cannot be negative']
     },
     location: {
         type: String,
+        required: [true, 'Location is required'],
+        trim: true,
     },
     country: {
         type: String,
+        required: [true, 'Country is required'],
+        trim: true,
     },
     reviews: [
         {
@@ -65,7 +76,8 @@ const listingschema = mongoose.Schema({
     ],
     owner: {
         type: mongoose.Schema.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: true
     },
     geography: {
         type: {
@@ -75,19 +87,24 @@ const listingschema = mongoose.Schema({
         },
         coordinates: {
             type: [Number],
-            required: true
+            required: true,
+            validate: {
+                validator: function (val) {
+                  return val.length === 2;
+                },
+                message: 'Coordinates must be [longitude, latitude]'
+            }
         }
-    },
-    createAt:{
-        type:Date,
-        default:Date.now()
     },
     category_type:{
         type:String,
         enum: ['luxury','budget','boutique','resort','hostel','apartment','villa','motel','beach','trending','rooms','iconic_cities','mountain','castles','pools','camping','farm','desert','forest', 'house', 'ferry','airports','ship','bungalow','hotel','cottage'],
         default:'rooms',
         required:true,
-    },
+    }   
+},
+{
+    Timestamps: true // add createdAt and updatedAt fields automatically
 });
 
 const listing = mongoose.model('listing', listingschema);

@@ -1,40 +1,259 @@
 <%- layout('./layouts/boilerplate.ejs') %>
 
+<style>
+    /* ================= HELPER TEXT ================= */
+    .helper-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    /* ================= LOADING OVERLAY ================= */
+    #loadingOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .form_element{
+        margin-top: .7rem;
+    }
+
+    /* ================= IMAGE BOX ================= */
+
+    .image-box {
+        position: relative;
+        display: inline-block;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        
+    }
+
+    /* Image */
+    .image-box img {
+        width: 240px;
+        height: 240px;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+    /* Remove button */
+    .remove-image-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+
+        border: none;
+        background: rgba(0, 0, 0, 0.65);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        cursor: pointer;
+        opacity: 0;
+        transform: scale(0.8);
+
+        transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    }
+
+    /* Show button on hover */
+    .image-box:hover .remove-image-btn {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Hover effect */
+    .remove-image-btn:hover {
+        background: #dc3545; /* red */
+    }
+
+    /* Click effect */
+    .remove-image-btn:active {
+        transform: scale(0.9);
+    }
+
+
+    /* Prevent images from shrinking */
+    .image-box {
+        flex: 0 0 auto;
+    }
+
+
+    /* ================= SLIDER WRAPPER ================= */
+    .image-slider-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .existing-images {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        padding: 10px 40px; /* space for buttons */
+        scrollbar-width: none;
+        cursor: grab;
+    }
+    .existing-images img {
+        user-drag: none;
+        -webkit-user-drag: none;
+        user-select: none;
+        pointer-events: none;
+    }
+
+
+    .existing-images::-webkit-scrollbar {
+        display: none;
+    }
+
+    .image-box {
+        flex: 0 0 auto;
+    }
+
+    /* ================= SLIDER BUTTONS ================= */
+    .slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+
+        border: none;
+        background: rgba(0,0,0,0.65);
+        color: white;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        cursor: pointer;
+        z-index: 10;
+    }
+
+    .slider-btn.left {
+        left: 0;
+    }
+
+    .slider-btn.right {
+        right: 0;
+    }
+
+    .slider-btn:hover {
+        background: #000;
+    }
+
+    /* ================= LOADING OVERLAY ================= */
+    #loadingOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    </style>
+
 <body>
+    <!-- Loading overlay -->
+    <div id="loadingOverlay">
+        <div class="spinner-border text-danger" role="status"></div>
+        <p class="mt-3 fw-semibold">listing is being updated, please wait...</p>
+    </div>
+
+    <!-- new listing form -->
     <div class="row"></div>
             <div class="col-8 offset-2">
                 <br>
                 <h1>Editing</h1>
-                <form method="post" action="/listings/edit/<%=list._id%>?_method=put" novalidate class="needs-validation" enctype="multipart/form-data">
-                    <div>
+                <form method="post" action="/listings/edit/<%=list._id%>?_method=put" novalidate class="needs-validation" enctype="multipart/form-data" id="editListingForm">
+                    <div class="form_element">
                         <label for="title" class="form-label">Title</label>
                         <input class="form-control" name=list[title] placeholder='write title' value="<%=list.title%>" type="text"  required>
+                        <small class="helper-text">
+                            Example: <em>Cozy beach house near Goa</em>
+                        </small>
                         <div class="invalid-feedback">Enter valid title</div>
                     </div>
-                    <div>
+                    <div class="form_element">
                         <label for="title" class="form-label">Description</label>
-                        <textarea class="form-control"  name=list[description] placeholder="write description"  required><%=list.description%></textarea>
+                        <textarea class="form-control" rows="4" name=list[description] placeholder="write description"  required><%=list.description%></textarea>
+                        <small class="helper-text">Example: <em>Mention location, amenities, nearby attractions, and rules.</em></small>
                         <div class="invalid-feedback">Enter valid description</div>
                     </div>
-                    <div>
-                        <label for="">Original Image</label><br>
-                        <img style="height: 10rem;width: 13rem;" src="<%=preview_url%>" alt="Original Image">
+                    
+
+
+                    <div class="form_element" style="margin-left:-2.2rem ;">
+                        <label for="title" class="form-label" style="margin-left:2.2rem ;">Existing Images</label>
+                        <div class="image-slider-wrapper">
+
+                            <!-- Left button -->
+                            <button type="button" class="slider-btn left" id="slideLeft">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                        
+                            <!-- Existing images (NO CHANGE INSIDE) -->
+                            <div class="existing-images" id="imageSlider">
+                                <% list.image.forEach((img, index) => { %>
+                                    <div class="image-box">
+                                        <img src="<%= img.url %>" alt="listing image">
+                                        <button type="button"
+                                                class="remove-image-btn"
+                                                data-url="<%= img.url %>">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        
+                            <!-- Right button -->
+                            <button type="button" class="slider-btn right" id="slideRight">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Hidden input to store removed images -->
+                        <input type="hidden" name="deletedImages" id="deletedImages" value="">
                     </div>
-                    <div>
-                       
-                        <label for="title" class="form-label">Update Image</label>
+
+
+                    <div class="form_element" style="margin-bottom: .7rem;">
+                        <label for="title" class="form-label">Update New Image (Maximum 10 images)</label>    
                         <input class="form-control" name=images[] placeholder="write image url" type="file"accept="image/*" multiple >
+                        <small class="helper-text">Note: <em>If you want to keep existing images than don't upload new images</em></small>
                     </div>
         
                     <div class="row">
                         <div class="col-md-4" >
                             <label for="title" class="form-label">Price</label>
                             <input class="form-control" name=list[price] placeholder='write price' value="<%=list.price%>" type="text" required>
+                            <small class="helper-text">Price per night (₹).</small>
                             <div class="invalid-feedback">Enter valid price</div>
+
                         </div>
                         <div class="col-md-4">
                             <label for="title" class="form-label">Location</label>
                             <input class="form-control" name=list[location] placeholder="write Location" value="<%=list.location%>" type="text"  required>
+                            <small class="helper-text">Example: <em>Baga Beach, Goa</em></small>
                             <div class="invalid-feedback">Enter valid location</div>
                         </div>
                         <div class="col-md-4">
@@ -69,12 +288,15 @@
                                 <option value="trending">Trending</option>
                                 <option value="villa">Villa</option>
                             </select>
+                            <small class="helper-text">Choose the category that best matches your property.</small>
+                            <div class="invalid-feedback">Enter valid category</div>    
                         </div>
                     </div>
 
-                    <div>
+                    <div class="form_element">
                         <label for="title" class="form-label">Country</label>
                         <input class="form-control" name=list[country] placeholder="write Country" value="<%=list.country%>" type="text"  required>
+                        <small class="helper-text">Use full country name (e.g., India).</small>
                         <div class="invalid-feedback">Enter valid country</div>
                     </div>
                     <button class="btn-dark btn" >Add changes</button>
@@ -82,3 +304,114 @@
             </div>
     </div>
 </body>
+
+<!-- JavaScript for image removal and slider functionality -->
+<script>
+    const removedImages = [];
+    const hiddenInput = document.getElementById('deletedImages');
+
+    document.querySelectorAll('.remove-image-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const imageUrl = btn.dataset.url;
+
+            // store removed image
+            removedImages.push(imageUrl);
+            hiddenInput.value = JSON.stringify(removedImages);
+
+            // hide from UI
+            btn.parentElement.style.display = 'none';
+        });
+    });
+</script>
+
+<!-- JavaScript for image removal and slider functionality -->
+
+<script>
+    const slider = document.getElementById('imageSlider');
+    const leftBtn = document.getElementById('slideLeft');
+    const rightBtn = document.getElementById('slideRight');
+
+    const SCROLL_AMOUNT = 260; // approx image width + gap
+
+    leftBtn.addEventListener('click', () => {
+        slider.scrollBy({ left: -SCROLL_AMOUNT, behavior: 'smooth' });
+    });
+
+    rightBtn.addEventListener('click', () => {
+        slider.scrollBy({ left: SCROLL_AMOUNT, behavior: 'smooth' });
+    });
+</script>
+<script>
+function toggleSliderButtons() {
+    leftBtn.style.display = slider.scrollLeft > 0 ? 'flex' : 'none';
+
+    rightBtn.style.display =
+        slider.scrollLeft + slider.clientWidth < slider.scrollWidth
+            ? 'flex'
+            : 'none';
+}
+
+toggleSliderButtons();
+
+slider.addEventListener('scroll', toggleSliderButtons);
+window.addEventListener('resize', toggleSliderButtons);
+</script>
+
+<!-- JavaScript for image removal and slider functionality -->
+<script>
+    if (slider.children.length <= 3) {
+    leftBtn.style.display = 'none';
+    rightBtn.style.display = 'none';
+}
+
+
+document.querySelectorAll('.existing-images img').forEach(img => {
+    img.addEventListener('dragstart', e => e.preventDefault());
+});
+
+
+
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+    slider.style.cursor = 'grabbing';
+});
+
+slider.addEventListener('mouseleave', () => {
+    isDown = false;
+    slider.style.cursor = 'grab';
+});
+
+slider.addEventListener('mouseup', () => {
+    isDown = false;
+    slider.style.cursor = 'grab';
+});
+
+slider.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    slider.scrollLeft = scrollLeft - walk;
+});
+
+
+/* ---------- Show loading overlay on submit ---------- */
+    const newListingForm = document.getElementById('editListingForm');
+    const overlay = document.getElementById('loadingOverlay');
+
+    newListingForm.addEventListener('submit', () => {
+        // If form is INVALID, do NOT show overlay
+        if (!editListingForm.checkValidity()) {
+            return;
+        }
+        // Form is valid → show overlay
+        overlay.style.display = 'flex';
+    });
+
+</script>

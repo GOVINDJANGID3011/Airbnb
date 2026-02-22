@@ -18,16 +18,18 @@ router.route('/signin')
         .get(usercontroller.signup_form)
         .post(wrapAsync(usercontroller.signup));
 
-// for email verification
+// for email verification by token and otp
 //here we did not used wrapAsync because we already used try catch block in verify_email controller function
 router.route('/verify-email')
-        .get(usercontroller.verify_email);
+        .get(usercontroller.verify_email_by_token)
+        .post(usercontroller.verify_email_by_otp);
+        
 
 //for login
 router.route('/login')
         .get(usercontroller.login_form)
         // here authenticate method of passport is used to verify user login credentials(that is username and password already exist or not in database , if exist then allow to login else redirect to login page again)
-        .post(saveRedirectUrl,uservarification,passport.authenticate('local',{failureRedirect:'/login',failureFlash:true,}),wrapAsync(usercontroller.login));
+        .post(saveRedirectUrl,passport.authenticate('local',{failureRedirect:'/login',failureFlash:true,}),wrapAsync(usercontroller.login));
 
 
 //for logout

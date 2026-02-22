@@ -88,17 +88,3 @@ module.exports.isreviewAuthor=async(req,res,next)=>{
     }
     next();
 }
-
-module.exports.uservarification=async(req,res,next)=>{
-    try {
-        const { username } = req.body;
-        const user = await require('./models/user_schema').findOne({ username: username });
-        if (user && !user.isVerified) {
-            req.flash('error', 'Please verify your email before logging in.');
-            return res.redirect('/login');
-        }
-        next();
-    } catch (error) {
-        next(error);
-    }
-}

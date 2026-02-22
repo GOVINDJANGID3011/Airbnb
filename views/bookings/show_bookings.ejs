@@ -552,9 +552,9 @@
     
     upcomingbookingsbtn.addEventListener('click', () => {
         bookingCardsBox.innerHTML = "";
-        bookingCards.forEach((card) => {
+        const today = new Date();
+        all_cards.forEach((card) => {
             const checkinDate = new Date(card.querySelector('.check-in-date').textContent);
-            const today = new Date();
             if (checkinDate >= today) {
                 bookingCardsBox.appendChild(card);
             }

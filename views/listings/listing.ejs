@@ -1,6 +1,136 @@
 <%- layout('./layouts/boilerplate.ejs') %>
 
 <style>
+
+        /* card styling */
+    .card-header {
+        display: flex;
+        gap: .5rem;
+        height: 28rem;
+        background-color: #fff;
+        padding: 0%;
+        border: none;
+    }
+
+    .card-header-left {
+        flex: 2;
+    }
+
+    .card-header-left img {
+        height: 100%;
+        width: 100%;
+        border-bottom-right-radius: 0%;
+        border-top-right-radius: 0%;
+    }
+
+    .card-header-right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+    }
+
+    .card-header-right img {
+        height: 100%;
+        width: 100%;
+        border-bottom-left-radius: 0%;
+        border-top-left-radius: 0%;
+    }
+
+    .card-header-right div {
+        flex: 1;
+        height: 40%;
+    }
+
+    .card-header button {
+        position: absolute;
+        top: 24.5rem;
+        right: 1.5rem;
+        color: black;
+        background-color: ffff;
+        border: black 1px solid;
+        border-radius: .5rem;
+        width: 10rem;
+        height: 2.2rem;
+        font-size: 1rem;
+        font-weight: 550;
+        cursor: pointer;
+    }
+
+    /* popup for images container */
+    .popup-image-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 40vh;
+    min-width: 50vw;
+    
+    }
+
+    .rows_container{
+        height: 100%;
+        width: 100%;
+    }
+
+    .row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .column {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        flex: 1;
+    }
+
+    .box {
+        flex: 1;
+        aspect-ratio: 1 / 1;     /* perfect square */
+        background: #f2f2f2;
+        overflow: hidden;
+    }
+
+    .box.big {
+        flex: 2;
+    }
+
+    .box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* fullscreen image popup */
+    #fullscreen-popup {
+        max-width: 95vw;
+        max-height: 85vh;
+        min-height: 40vh;
+        min-width: 60vw;
+        padding: 10px;
+        display: none;
+        margin-top: 1.2rem;
+    }
+
+    #fullscreen-popup img {
+        width: 100%;
+        height: auto;
+        max-height: 85vh;
+        object-fit: contain;
+    }
+
+    #fullscreen-overlay {
+        display: none;
+        background: rgba(0, 0, 0, 0.9);
+    }
+
+    /* delete button styling */
+    #delete-confirm-popup {
+        max-width: 420px;
+        text-align: center;
+    }
+    
+
     /* Review styling */
     .review_cards {
         display: flex;
@@ -16,7 +146,6 @@
         overflow: hidden;
         /* word-wrap: break-word; */
     }
-
     .review_user_profile {
         display: flex;
         align-items: center;
@@ -57,7 +186,6 @@
         background:none;
         cursor: pointer;
     }
-
     /* for map */
     #map{
         height: 30rem;
@@ -83,6 +211,7 @@
         /* white-space: nowrap; */         /* Keep text on one line */ 
         margin-bottom: 5px;
     }
+
     .read-more {
         color: #007bff;
         cursor: pointer;
@@ -126,17 +255,76 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.4);
+        background: rgba(0, 0, 0, 0.8);
         z-index: 999;
     }
+
+
 </style>
 
 <body>
     <div class="row">
         <div class="col-10 offset-1">
             <h1 class="mt-2 mb-2"><%= list.title %></h1>
+            <!-- Popup for images-->
+            <div class="image-overlay overlay" id="images-overlay"></div>
+            <div class="image-popup popup" id="images-popup">
+                <button class="popup-close" id="closePopup">Close</button>
+                <br><br><br>
+                <div class="popup-image-container" data-images='<%- JSON.stringify(list.image) %>'>
+
+                    <!-- TEMPLATE rows_container (6 images block) -->
+                    <div class="rows_container image-block-template">
+                    
+                        <div class="row">
+                            <div class="box big"></div>
+                            <div class="column">
+                                <div class="box">
+                                    <!-- full image popup -->
+
+                                </div>
+                                <div class="box"></div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="column">
+                                <div class="box"></div>
+                                <div class="box"></div>
+                            </div>
+                            <div class="box big"></div>
+                        </div>
+                    
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fullscreen image popup -->
+            
+            <div class="overlay" id="fullscreen-overlay"></div>
+            <div class="popup" id="fullscreen-popup">
+                <button class="popup-close" id="closeFullscreen">Close</button>
+                <br><br>
+                <img id="fullscreen-image" src="" alt="Full Image">
+            </div>
+
+
             <div class="card">
-                <img src="<%= list.image[0].url %>" class="card-img-top" style="height: 27rem;" alt="/place">
+                <div class="card-header">
+                    <div class="card-header-left">
+                    <img src="<%= list.image[0].url %>" class="card-img-top" style="height: 100%;width: 100%;" alt="/place">
+                    </div>
+                    <div class="card-header-right">
+                        <div>
+                        <img src="<%= list.image[1].url %>" class="card-img-top" style="height: 100%;width: 100%;" alt="/place">
+                        </div>
+                        <div>
+                        <img src="<%= list.image[2].url %>" class="card-img-top" style="height: 100%;width: 100%;" alt="/place">
+                        </div>
+                    </div>
+                    <button class="btn_all_images"><i class="fa-solid fa-grip"></i> Show all photos</button>
+                </div>
+
                 <div class="card-body mb-1">
                     <p>Hosted by <%= list.owner.username %></p>
                     <p class="card-text">
@@ -155,9 +343,23 @@
                             <a style="text-decoration: none;" href="/listings/edit/<%= list._id %>">Edit</a>
                         </button>
                     </div>
+
+                    <!-- delete listing button -->
+                    <!-- Delete confirmation popup -->
+                    <div class="overlay" id="delete-confirm-overlay"></div>
+
+                    <div class="popup" id="delete-confirm-popup">
+                        <h4>Delete Listing?</h4>
+                        <p>Are you sure you want to delete this listing? After that this action cannot be undone.</p>
+                    
+                        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
+                            <button class="btn btn-danger" id="confirmDelete">Yes, Delete</button>
+                            <button class="btn btn-secondary" id="cancelDelete">Cancel</button>
+                        </div>
+                    </div>
                     <div class="col-3">
                         <form method="post" action="/listings/delete/<%= list._id %>?_method=delete">
-                            <button class="btn btn-dark btn-delete">Delete</button>
+                            <button type="button" class="btn btn-dark btn-delete delete-trigger">Delete</button>
                         </form>
                     </div>
                 </div>
@@ -165,7 +367,7 @@
             </div>
 
             <hr>
-            
+
             <!-- booking button -->
             <% if(currUser && list.owner._id.equals(currUser._id)){ %>
             <h3 class="text-danger ">You cannot book your own listing</h3>
@@ -174,9 +376,9 @@
                 <button class="btn btn-dark btn-edit">book</button>
             </form>
             <% } %>
-
+            
             <!-- add review -->
-            <% if(currUser || list.reviews.length){ %>
+            <% if(currUser){ %>
             <hr>
             <form method="post" action="/listings/<%= list._id %>/review/add" novalidate class="needs-validation">
                 <h3>Add a review</h3>
@@ -222,6 +424,7 @@
                     <div class="review-box" id="reviewBox">
                         <p class="review-text" id="reviewText"><%= review.comment %></p>
                     </div>
+
                     <!-- Popup -->
                     <div class="overlay" id="overlay"></div>
                     <div class="popup" id="popup">
@@ -253,7 +456,10 @@
         </div>
     </div>
 
-    <!-- Variables for JS -->
+
+
+
+<!-- Variables for JS -->
     <script>
         const map_token = '<%= process.env.MAP_TOKEN %>';
         const mapCoordinate = <%- JSON.stringify(list.geography.coordinates) %>;
@@ -261,10 +467,10 @@
         
     </script>
 
-    <!-- For map -->
+<!-- For map -->
     <script src="/js/map.js"></script>
 
-    <!-- code for review pop-up -->
+<!-- code for review pop-up -->
     <script>
         
         /**
@@ -282,8 +488,8 @@
          */
         readMoreLinks.forEach((readMore, index) => {
             readMore.addEventListener("click", function () {
-                popups[index].style.display = "block";   // Display the corresponding pop-up
-                overlays[index].style.display = "block"; // Display the overlay
+                popups[index+2].style.display = "block";   // Display the corresponding pop-up
+                overlays[index+2].style.display = "block"; // Display the overlay
             });
         });
 
@@ -322,6 +528,143 @@
         });
 
     </script>
-        
-    <br>
+
+<!-- code for images pop-up -->
+<script>
+    const btnForAllImages = document.querySelector(".btn_all_images");
+    const imagePopup = document.querySelector(".image-popup");
+    const imageOverlay = document.querySelector(".image-overlay");
+
+    
+    btnForAllImages.addEventListener('click',()=>{
+        imagePopup.style.display= "block";
+        imageOverlay.style.display="block";
+    })
+</script>
+
+
+<!-- code for image layout in popup -->
+<script>
+    const container = document.querySelector('.popup-image-container');
+    const images = JSON.parse(container.dataset.images);
+
+    // ❌ let x=(images.length-1)/6;
+    // ✅ FIX: use proper block count
+    let x = Math.ceil(images.length / 6);
+
+    while (x--) {
+        container.appendChild(createImageBlock());
+    }
+
+    // ✅ FIX: define index
+    let index = 0;
+
+    // ✅ FIX: collect boxes AFTER blocks are created
+    const boxes = Array.from(container.querySelectorAll('.box'));
+
+    // Fill images into boxes
+    boxes.forEach(box => {
+        if (index < images.length) {
+            const img = document.createElement('img');
+            img.src = images[index].url;
+            img.alt = 'Listing Image';
+            img.classList.add('popup-image');
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            box.appendChild(img);
+            box.style.display = 'block';
+            index++;
+        }else {
+            box.style.display="none";
+        }
+    });
+
+    function createImageBlock() {
+        const block = document.createElement('div');
+        block.className = 'rows_container image-block-template';
+
+        block.innerHTML = `
+            <div class="row">
+                <div class="box big"></div>
+                <div class="column">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="column">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+                <div class="box big"></div>
+            </div>
+        `;
+        return block;
+    }
+</script>
+
+<!-- logic for full image popup -->
+ <script>
+    const fullscreenPopup = document.getElementById('fullscreen-popup');
+    const fullscreenOverlay = document.getElementById('fullscreen-overlay');
+    const fullscreenImage = document.getElementById('fullscreen-image');
+    const closeFullscreenBtn = document.getElementById('closeFullscreen');
+
+    // Event delegation (works for dynamically added images)
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('popup-image')) {
+            fullscreenImage.src = e.target.src;
+            fullscreenPopup.style.display = 'block';
+            fullscreenOverlay.style.display = 'block';
+        }
+    });
+
+    // Close fullscreen popup
+    closeFullscreenBtn.addEventListener('click', closeFullscreen);
+    fullscreenOverlay.addEventListener('click', closeFullscreen);
+
+    function closeFullscreen() {
+        fullscreenPopup.style.display = 'none';
+        fullscreenOverlay.style.display = 'none';
+        fullscreenImage.src = '';
+    }
+</script>
+
+<!-- logic for delete button confirmation -->
+ <script>
+    let deleteForm = null;
+
+    const deletePopup = document.getElementById('delete-confirm-popup');
+    const deleteOverlay = document.getElementById('delete-confirm-overlay');
+    const cancelBtn = document.getElementById('cancelDelete');
+    const confirmBtn = document.getElementById('confirmDelete');
+
+    // When delete button is clicked
+    document.querySelectorAll('.delete-trigger').forEach(btn => {
+        btn.addEventListener('click', () => {
+            deleteForm = btn.closest('form'); // store form reference
+            deletePopup.style.display = 'block';
+            deleteOverlay.style.display = 'block';
+        });
+    });
+
+    // Cancel delete
+    cancelBtn.addEventListener('click', closeDeletePopup);
+    deleteOverlay.addEventListener('click', closeDeletePopup);
+
+    // Confirm delete
+    confirmBtn.addEventListener('click', () => {
+        if (deleteForm) deleteForm.submit();
+    });
+
+    function closeDeletePopup() {
+        deletePopup.style.display = 'none';
+        deleteOverlay.style.display = 'none';
+        deleteForm = null;
+    }
+</script>
+
+
 </body>

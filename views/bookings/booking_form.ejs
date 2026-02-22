@@ -1,39 +1,132 @@
 <%- layout('./layouts/boilerplate.ejs') %>
 
-
 <body>
-        <div class="row"></div>
-            <div class="col-8 offset-2">
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" style="display:none;">
+        <div class="spinner-border text-danger" role="status"></div>
+        <p class="mt-3 fw-semibold">Creating booking, please wait...</p>
+    </div>
+
+    <div class="row">
+        <div class="col-8 offset-2">
+            <br>
+            <h1>Create a new Booking</h1>
+
+            <form method="post"
+                  action="/booking/<%= newlisting._id %>"
+                  novalidate
+                  class="needs-validation"
+                  id="newBookingForm">
+
+                <!-- LISTING -->
+                <label class="form-label">Listing</label>
+                <input type="text"
+                       class="form-control"
+                       value="<%= newlisting.title %>"
+                       disabled>
+                <small class="helper-text">
+                   <em> You are booking this property</em>
+                </small>
+
+                <br><br>
+
+                <!-- FULL NAME -->
+                <label class="form-label">Full Name</label>
+                <input name="fullname"
+                       placeholder="Enter your full name"
+                       type="text"
+                       class="form-control"
+                       required>
+                <small class="helper-text">
+                   <em>Enter the name as per your ID </em> 
+                </small>
+                <div class="invalid-feedback">
+                    Full name is required
+                </div>
+
+                <br><br>
+
+                <!-- PHONE NUMBER -->
+                <label class="form-label">Phone Number</label>
+                <input name="phone_no"
+                       placeholder="Enter mobile number"
+                       type="tel"
+                       pattern="[0-9]{10}"
+                       class="form-control"
+                       required>
+                <small class="helper-text">
+                   <em> 10-digit mobile number (no spaces or symbols) </em>
+                </small>
+                <div class="invalid-feedback">
+                    Enter a valid phone number
+                </div>
+
+                <br><br>
+
+                <!-- CHECK-IN -->
+                <label class="form-label">Check-in Date</label>
+                <input name="checkin"
+                       type="date"
+                       class="form-control"
+                       required>
+                <small class="helper-text">
+                    <em>Select your arrival date </em>
+                </small>
+                <div class="invalid-feedback">
+                    Check-in date is required
+                </div>
+
                 <br>
-                <h1>Create a new Booking</h1>
-                <form method="post" action="/booking/<%= newlisting._id %>" novalidate class="needs-validation" >
 
-                <label for="listing" class="form-label">listing</label>
-                <input placeholder="<%= newlisting.title %>" type="text" class="form-control" required disabled >
+                <!-- CHECK-OUT -->
+                <label class="form-label">Check-out Date</label>
+                <input name="checkout"
+                       type="date"
+                       class="form-control"
+                       required>
+                <small class="helper-text">
+                   <em> Must be after the check-in date </em>
+                </small>
+                <div class="invalid-feedback">
+                    Check-out date is required
+                </div>
 
-                <label for="" class="form-label">Full Name</label>
-                <input name='fullname' placeholder="write fullname" type="text" class="form-control" required>
-                <div class="invalid-feedback">Name is required</div>
-
-                <label for="" class="form-label">Phone Number</label>
-                <input name='phone_no' placeholder="write number" type="number" class="form-control" required>
-                <div class="invalid-feedback">Number is required</div>
-
-                <label for="" class="form-label">Check_in</label>
-                <input name=checkin placeholder="write checkin" type="date" class="form-control" required>
-                <div class="invalid-feedback">checkin date is required</div>
-                
-                <label for="" class="form-label">Check_out</label>
-                <input name='checkout' placeholder="write checkout" type="date" class="form-control" required>
-                <div class="invalid-feedback">checkout is required</div>
                 <br>
-                <button class="btn-dark btn" >book</button>
-            </div>
-            
+
+                <!-- BUTTON -->
+                <button class="btn btn-dark">
+                    Book Now
+                </button>
+
+            </form>
         </div>
-        
-    </form>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    } else {
+                        document.getElementById("loadingOverlay").style.display = "flex";
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })();
+
+        const checkin = document.querySelector('input[name="checkin"]');
+        const checkout = document.querySelector('input[name="checkout"]');
+
+        checkin.addEventListener("change", () => {
+            checkout.min = checkin.value;
+        });
+    </script>
+
 </body>
-
-
-

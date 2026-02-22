@@ -33,7 +33,7 @@ router.route('/add')
 router.route('/edit/:id')
         .get(isLogged,isOwner,wrapAsync(listingcontroller.edit_listing_form))       // Edit route
         .put(upload.array('images[]',10),
-        listingvalidation,isOwner,
+        isOwner,
         wrapAsync(listingcontroller.update_listing));      //update route
 
 
